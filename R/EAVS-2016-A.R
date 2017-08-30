@@ -268,7 +268,7 @@ table(d$A3b %% 1, exclude = NULL)
 
 d <- mutate(d, 
             reg_total_eligible = ifelse(A1a < 0, NA, A1a), 
-            na_reg_total_eligible1 = case_when(A1a >= 0 ~ "Reported", 
+            na_reg_total_eligible = case_when(A1a >= 0 ~ "Reported", 
                                                A1a == -999999 ~ "Not available", 
                                                A1a == -888888 ~ "Not applicable", 
                                                is.na(A1a) ~ "Missing"), 
@@ -287,6 +287,7 @@ d <- mutate(d,
                                         A3b == -888888 ~ "Not applicable", 
                                         A3b == -999999 ~ "Not available", 
                                         is.na(A3b) ~ "Missing"))
+
 
 
 
@@ -326,6 +327,11 @@ d <-
                                        A4b == 2 ~ "Allowed for some voters",
                                        A4b == 3 ~ "Other"),
          reg_sameday_allow_spec = A4b_Other)
+
+
+todo <- todo + 1
+beepr::beep(2)
+# only 1 "other," a few with "0" but 0 isn't in the codebook.
 
 
 
@@ -449,6 +455,9 @@ todo <- todo + 1
 beepr::beep(2)
 # calculated total is probably going to be saturated with NAs
 # without some kind zero rule. what do?
+
+
+
 
 
 
@@ -1253,8 +1262,4 @@ d %>%
 select(-one_of(drop_names)) %>% 
 print %>% 
 saveRDS("data/clean/clean-EAVS-2016-A.RDS")
-
-
-
-
 

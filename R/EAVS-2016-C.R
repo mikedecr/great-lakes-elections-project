@@ -237,12 +237,13 @@ table(is.na(d$C3), exclude = NULL)
 table(d$C2 %% 1, exclude = NULL)
 table(d$C3 %% 1, exclude = NULL)
 
+
 d <- 
   mutate(d, 
          abs_permareg = ifelse(C2 < 0, NA, C2),
          na_abs_permareg = case_when(C2 >= 0 ~ "Reported",
                                      C2 == -888888 ~ "Not applicable",
-                                     C2 == -999999 ~ "Not available",
+                                     C2 == -9999999 ~ "Not available",
                                      is.na(C2) ~ "Missing"),
          abs_perma_sentcount = ifelse(C3 < 0, NA, C3),
          na_abs_perma_sentcount = case_when(C3 >= 0 ~ "Reported",
