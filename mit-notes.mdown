@@ -5,11 +5,13 @@ title: "Questions about EAVS"
 
 # To do for cleaning the directory
 
+fix availability of turnout data?
+
 Do this as linearly as possible
 
 - start with EAVS
-- move to SPAE/waits
-- move to VEP
+- SPAE/waits
+- VEP
 - Normalized measures (CPS)
 - move to CPS
 
