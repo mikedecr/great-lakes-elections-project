@@ -1,5 +1,68 @@
-output/
-zips/
-data/eavs-2016.dta
-data/clean/
-.rapp.history
+# ----------------------------- #
+#          R things             #
+# ----------------------------- #
+# History files
+.Rapp.history
+.Rhistory
+
+# Example code in package build process
+*-Ex.R
+
+# R data files from past sessions
+.Rdata
+
+
+
+# ----------------------------- #
+#       other things
+# ----------------------------- #
+
+*.DS_Store
+
+# don't need grant text etc.
+bureaucracy/*
+readings/*
+
+# guildeline spreadsheets
+*.numbers
+*alias
+
+
+# ----------------------------- #
+#          Data
+# ----------------------------- #
+
+# EAVS
+# contains a ZIP, don't store the DTA itself
+# or intermediate RDS files
+data/eavs/*.dta
+data/eavs/*.RDS
+# don't store past years (2014 or pettigrew 2012)
+data/EAVS/past-years/*
+# waste from old repo setup
+data/EAVS/old/*
+# keep PDF docs of the survey instrument and codebook?
+# data/EAVS/docs/*
+
+
+# CCES
+# repo contains a zip, hide the resulting folder
+data/cces/*
+
+# SPAE
+# repo contains a zip, hide the resulting folder
+data/SPAE/*
+
+# VEP
+# see data but ignore other folders
+data/vep/*/
+
+
+CPS/
+
+# ----------------------------- #
+#          output
+# ----------------------------- #
+
+# code makes its own output, so hide it
+output/*

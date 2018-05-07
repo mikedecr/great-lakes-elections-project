@@ -1,0 +1,716 @@
+Codebook for 207countyturnout20170629
+This is from the June 29, 2017 Version of the Voter Turnout File
+Codebook written on November 12, 2017
+
+VARIABLES
+All capital letters have been used for variable names to set them off.  They are always lower case in the dataset.  
+
+YEAR
+year data applies to
+
+FIPS2
+Census state plus county fips code.  Four or five digits, depending on the state.
+
+In the case of counties (or county equivalents in VA) that have been combined together since 1970, with the exception of Kansas City, this is the FIPS code to just one of those combined areas.  
+For Kansas City, we assigned an entirely new code that is not a Census code.  
+
+States that had alterations to their counties in this dataset because of no significant changes to their county boundaries are as follows (see appendix below for full information about this).  
+If states you are interested in aren't in the following list, treat fips2 as the Census fips code.  
+AK (extensive changes)
+KS
+NM
+SD
+VA (extensive changes)
+
+COUNTYNAME
+Name of county.
+
+TVOTE
+Total number of votes in a county in the November election.
+
+RVOTE
+Total number of Republican votes for president in a county in the November election.
+
+DVOTE
+Total number of Democratic votes for president in a county in the November election.
+
+VAP
+Estimated voting age population in a county on July 1 of the year in question.  
+
+PROBATIONERS
+Estimated number of felon probationers in the county.  
+Note that states that disenfranchise probationers only do so for felon probationers, and that the percentage of probationers who are felons varies greatly by state.
+"0" is input is a state does not disenfranchise probationers.  
+
+PAROLEES
+Estimated number of parolees in the county
+"0" is input is a state does not disenfranchise parolees.
+
+INCAR
+Estimated number of incarcerated felons
+
+CVAPMISSPER
+I'd have to look this up, but I think I know what it is.
+Proportion of VAP in the county for whom an estimate of cvap is unavailable.  
+Mean=.0000938 (i.e., one one hundreth of a percent), non-zero for 2255 cases out of 27,786 cases, mean=.001156 among those cases.
+Only observed in 1992, 1996, 2000 and 2004.  
+
+CVAPPER
+Estimated proportion of voting age population that was a citizen on July 1 of the year in question.  
+
+CVAP
+Number of citizens of voting age computed from VAP and CVAPPER above.  
+
+VEP
+Estimaed number of voting eligible people in the county.
+
+NCVAPPER
+Estimated proportion of CVAP that is a naturalized citizen on July 1 of the year in question.  
+
+BATTERIES OF AGE VARIABLES
+Numerator: number of voting age people in the age category in question
+Denominator: number of citizens of voting age in the county
+Measured as a proportion.
+So this is merely VAP data
+I very much want to estimate the number of people in these age categories by race/Hispanic status, and gender
+I believe these data apply to July 1 of the year in question, but I'd have to go into the code and verify this.  
+
+BATTERIES OF RACE VARIABLES
+Numerator: number of citizens of voting age with the race/Hispanic status in question, with estimates of probationers and parolees of that race/Hispanic status in the county subtracted out.  
+Denominator: number of citizens of voting age in the county, with estimates of probationers and parolees in the county subtracted out.  
+Measured as a proportion.
+So this is somewhere between CVAP and VEP data.  
+I believe these data apply to July 1 of the year in question, but I'd have to go into the code and verify this.  
+
+VAPNOV
+Estimated voting age population of county in November of year in question extrapolated from VAP measured on July 1.
+
+CVAPNOV
+Estimated citizen voting age population of county in November of year in question extrapolated from CVAP measured on July 1.
+
+VEPNOV
+Estimated voting eligible population of county in November of year in question extrapolated from VEP measured on July 1.  
+
+TURNOUTVAP
+Turnout as a proportion using voting age population as the demoninator.  
+Computed by: TVOTE/VAPNOV
+
+TURNOUTCVAP
+Turnout as a proportion using Citizen voting age population as the demoninator.  
+Computed by: TVOTE/CVAPNOV
+
+
+
+APPENDIX: List of changes to county boundaries and how these were dealt with in the dataset.  
+
+*This program creates a new variable, fips2, that alters fips codes so that one fips code
+*applies to the same locale over time.  
+*It also ensures that different locales that are given the same fips code are not compared over time
+*by giving them a year suffix that differentiates them.  
+*Once this code has been run on a file, the file has to be collapsed on all appropriate variables + fips2,
+*deleting fips.
+*Whenever possible, changes to past fips codes to make them compatible with currently existing fips codes 
+*was done.  
+
+*The code is made as comparable over time, which means that some locales that are currently separate from each other
+*were combined so an uninterrupted time series could be created.  
+*This especially influences VA, which had many cities split apart from counties in this time.
+*It is possible to go in and alter the code to make uninterrupted time series within decades only, which would 
+*enable more contemporary counties to look like they do today.  
+
+*If a change was made in a year on July 1 or earlier, then the entire year is considered to have the change.
+*This is because inter- and post-censal estimates are made for July 1.  
+
+*The information was sorted so that all changes pertaining to one state were put into one place.  
+
+*All commented out statements are from the source, except when "CK: " is put at the beginning of a line, meaning
+*it is a comment from Carl Klarner.
+
+*Source of information about county changes
+*https://www.census.gov/geo/reference/county-changes.html
+
+*The code that deals with Kansas City isn't from the above source.  
+
+*By clicking on a year below you will see the substantial county changes that occurred during that decade. 
+*Substantial county changes include all county boundary changes affecting an estimated population of 200 or more people, 
+*changes of at least one square mile where no estimated population was provided and research indicated that the affected 
+*population may have been 200 people or more, or "large" annexations of unpopulated territory (10 square miles or more).
+
+gen fips2=fips
+
+*AL
+*•	DeKalb County, Alabama (01-049):
+*Name corrected from De Kalb County.
+*CK: no changes required from the above
+
+*AK
+*•	Petersburg Borough, Alaska (02-195): 
+*Created from part of former Petersburg Census Area (02-195) and part of Hoonah-Angoon Census Area (02-105) effective January 3, 2013; estimated population 3,203.
+*•	Hoonah-Angoon Census Area, Alaska (02-105):
+*Part taken to create new Petersburg Borough (02-195) effective January 3, 2013; estimated detached population: 1
+*•	Prince of Wales-Hyder Census Area, Alaska (02-198):
+*Prince of Wales-Hyder Census Area (02-198) added part of the former Petersburg Census Area (02-195) effective January 3, 2013; estimated added population 613.
+*CK: Hoonah-Angoon doesn't have to be altered, because it only lost one person.  
+*CK: Petersburg Borough does have to be altered, because it lost 613 people to Prince of Wales-Hyder.  
+*CK: however, no changes are made here, because both of those entities come up again in the 2000s changes, and they are both part of the six 
+*geographic areas that will become one large area.  
+
+*•	Kusilvak Census Area, Alaska (02-158)
+*Changed name and code from Wade Hampton Census Area (02-270) effective July 1, 2015.
+*•	Wade Hampton Census Area, Alaska (02-270)
+*Changed name and code to Kusilvak Census Area (02-158) effective July 1, 2015.
+replace fips2=2158 if fips2==2270
+
+*2000s
+
+*•	Hoonah-Angoon Census Area, Alaska (02-105):
+*Created from the remainder of the former Skagway-Hoonah-Angoon Census Area (02-232) when the new Skagway Municipality (02-230) was created 
+*effective June 20, 2007; population: 2,574.
+*•	Skagway Municipality, Alaska (02-230):
+*Created from part of the former Skagway-Hoonah-Angoon Census Area (02-232) effective June 20, 2007; boundaries are identical to Skagway census 
+*subarea; population: 862. The remainder of the former Skagway-Hoonah-Angoon Census Area was established as the new Hoonah-Angoon Census Area (02-105).
+*•	Skagway-Hoonah-Angoon Census Area, Alaska (02-232):
+*Split to create Skagway Municipality (02-230) and Hoonah-Angoon Census Area (02-105), effective June 20, 2007.
+*CK: Hoonah-Angoon is mentioned above in the 2010s, but since it wasn't altered there, there is no problem.  
+*CK: this area is also influenced by changes in the 1990s, and what I do isn't hurt by that fact.
+replace fips2=2232 if fips2==2230|fips2==2105
+*CK: collapse necessary for the above.  
+
+*•	Petersburg Census Area, Alaska (02-195):
+*Created from the remainder of the former Wrangell-Petersburg Census Area (02-280) when the new Wrangell City and Borough was created 
+*effective June 1, 2008; estimated population: 4,260.
+*•	Prince of Wales-Hyder Census Area, Alaska (02-198):
+*Created from the remainder of the former Prince of Wales-Outer Ketchikan Census Area (02-201) after part (Outer Ketchikan area) 
+*was annexed by Ketchikan Gateway Borough (02-130) effective May 19, 2008, and part (Meyers Chuck area) included in the new Wrangell City 
+*and Borough effective June 1, 2008; estimated population: 6,115.
+*•	Wrangell City and Borough, Alaska (02-275):
+*Created from part of the former Wrangell-Petersburg Census Area (02-280) and part of Prince of Wales-Outer Ketchikan Census Area (02-201) 
+*(Meyers Chuck area) effective June 1, 2008; estimated population: 2,448. The remainder of the former Wrangell-Petersburg Census Area was 
+*established as the new Petersburg Census Area (02-195) effective June 1, 2008.
+*CK: there are six distinct geographic locales in all the above places.  The only way to get a continuous area is to combine all six together.
+*CK: These are not places with large populations.  The new fips code will be 2999
+*•	Prince of Wales-Outer Ketchikan Census Area, Alaska (02-201):
+*Part (Outer Ketchikan area) annexed by Ketchikan Gateway Borough (02-130) and part (Meyers Chuck area) included in new Wrangell City and 
+*Borough (02-275), remainder renamed Prince of Wales-Hyder Census Area (02-198) effective May 19, 2008.
+*CK: dealt with above, no action necessary
+*•	Wrangell-Petersburg Census Area, Alaska (02-280):
+*Split to create part of Wrangell City and Borough (02-275) and all of Petersburg Census Area (02-195), effective June 1, 2008.
+*CK: dealt with above, no action necessary.
+*•	Ketchikan Gateway Borough, Alaska (02-130):
+*Annexed a substantial portion of the former Prince of Wales-Outer Ketchikan Census Area (02-201), including most of the area known as Outer Ketchikan 
+*effective May 19, 2008; estimated added population: 7. As a result, the remaining area of the former Prince of Wales-Outer Ketchikan Census Area was 
+*renamed Prince of Wales-Hyder Census Area (02-198).
+*CK: dealt with above, no further action necessary.
+*CK: SUMMARY OF PLACES CHANGED BY THIS CODE
+*Petersburg Census Area, Alaska (02-195)
+*Wrangell-Petersburg Census Area (02-280)
+*Prince of Wales-Hyder Census Area, Alaska (02-198)
+*Ketchikan Gateway Borough (02-130)
+*Prince of Wales-Outer Ketchikan Census Area (02-201)
+*Wrangell City and Borough, Alaska (02-275)
+*Prince of Wales-Outer Ketchikan Census Area, Alaska (02-201)
+*CK: I checked, and there is no fips=2999
+replace fips2=2999 if fips2==2130|fips2==2195|fips2==2198|fips2==2201|fips2==2275|fips2==2280
+
+*1990s
+
+*•	Denali Borough, Alaska (02-068): 
+*Created from part of the Yukon-Koyukuk Census Area (02-290) and an unpopulated part of the Southeast Fairbanks Census Area (02-240) 
+*effective December 7, 1990; 1990 population: 1,682.
+*•	Yukon-Koyukuk Census Area, Alaska (02-290): 
+*Part taken to create the new Denali Borough (02-068) effective December 7, 1990; 1990 detached population: 1,682.
+*CK: dealt with above, no action necessary.
+replace fips2=2068 if fips2==2290|fips2==2240
+*CK: collapse is necessary with the above, although one of the areas may not appear in a dataset because it has no population.
+
+*•	Skagway-Hoonah-Angoon Census Area, Alaska (02-232): 
+*Created from the remainder of the former Skagway-Yakutat-Angoon Census Area (02-231) when the new Yakutat City and Borough (02-282) 
+*was created effective September 22, 1992; 1990 population: 3,679.
+*•	Yakutat City and Borough, Alaska (02-282): 
+*Created from part of the former Skagway-Yakutat-Angoon Census Area (02-231) effective September 22, 1992. The remainder of the former 
+*Skagway-Yakutat-Angoon Census Area was established as the new Skagway-Hoonah-Angoon Census Area (02-232) effective September 22, 1992; 
+*1990 population: 725.
+*•	Skagway-Yakutat-Angoon Census Area, Alaska (02-231): 
+*Split to create the Skagway-Hoonah-Angoon Census Area (02-232) and Yakutat City and Borough (02-282) effective September 22, 1992.
+*CK: The Skagway-Hoonah-Angoon Census Area (02-232) is mentioned again above in the 2000s, but the code here is still appropriate.
+*CK: The area split here, and then one of those sub-areas split in the 2000s.  So all three of those areas will become the same area.
+replace fips2=2231 if fips2==2232|fips2==2282
+*CK: collapse necessary for these
+
+*•	Southeast Fairbanks Census Area, Alaska (02-240):
+*Unpopulated part taken to create the new Denali Borough (02-068) effective December 7, 1990.
+*CK: no action necessary
+
+*1980s
+
+*•	Aleutians East Borough, Alaska (02-013):
+*Created from part of the former Aleutian Islands Census Area (02-010) effective October 23, 1987. 
+*The remainder of the former Aleutian Islands Census Area was established as the new Aleutians West Census Area (02-016); 1980 population: 1,643.
+*•	Aleutians West Census Area, Alaska (02-016):
+*Created from the remainder of the former Aleutian Islands Census Area (02-010) when the new Aleutians East Borough (02-013) 
+*was created effective October 23, 1987; 1980 population: 6,125.
+*•	Aleutian Islands Census Area, Alaska (02-010):
+*Split to create the Aleutians East Borough (02-013) and the Aleutians West Census Area (02-016) effective October 23, 1987.
+replace fips2=2010 if fips2==2013|fips2==2016
+*CK: collapse necessary for these
+
+*•	Lake and Peninsula Borough, Alaska (02-164):
+*Created from part of the Dillingham Census Area (02-070) effective April 24, 1989; 1980 population: 1,384.
+*•	Dillingham Census Area (02-070):
+*Part taken to create the new Lake and Peninsula Borough (02-164) effective April 24, 1989; 1980 detached population: 1,384.
+replace fips2=2070 if fips2==2164
+*CK: collapse necessary for this one
+
+*•	Northwest Arctic Borough, Alaska (02-188):
+*Created from all of the former Kobuk Census Area (02-140) and an unpopulated part of the North Slope Borough (02-185) 
+*effective June 2, 1986; 1980 population: 4,831.
+*•	North Slope Borough (02-185): 
+*Unpopulated part plus all of the former Kobuk Census Area (02-140) taken to create the new Northwest Arctic Borough (02-188) effective June 2, 1986.
+*•	Kobuk Census Area (02-140): 
+*All taken plus unpopulated part of the North Slope Borough (02-185) to create the new Northwest Arctic Borough (02-188) effective June 2, 1986.
+replace fips2=2188 if fips2==2140|fips2==2185
+*CK: collapse necessary for the above.  
+
+*1970s
+
+*Changes to County Equivalent Entities in Alaska
+*•	The county equivalent entities in Alaska changed from Census Divisions in 1970 to Boroughs and Census Areas in 1980. 
+*The inventory and boundaries of the Alaska county-level entities changed substantially during the decade.
+*•	New entities created in Alaska are: Dillingham Census Area (02-070), North Slope Borough (02-185), and Valdez-Cordova Census Area (02-261).
+*Deleted county equivalent entities in Alaska
+*•	Angoon Division (02-030)
+*•	Barrow Division (02-040)
+*•	Cordova-McCarthy Division (02-080)
+*•	Kenai-Cook Inlet Division (02-120)
+*•	Kuskokwim Division (02-160)
+*•	Outer Ketchikan Division (02-190)
+*•	Prince of Wales Division (02-200)
+*•	Skagway-Yakutat Division (02-230)
+*•	Upper Yukon Division (02-250)
+*•	Valdez-Chitina-Whittier Division (02-260)
+*CK: None of these fips codes show up in the 1980 census, so there is no problem there.  
+*CK: the number of fips codes went from 29 to 25 from 1970 to 1980.  
+*CK: Did any fips code that exists in both 1970 and 1980 change the geographic locale to which it represents?
+*CK: Dillingham Census Area (02-070) apparently did, since it is new, and a 02-070 existed in 1970.  
+*CK: looking at population figures, it appears that the change occurred between 1979 and 1980.  
+*replace fips2=20701980 if fips2==2070&year>1979
+*CK: the above is the only place where I'd have a four-digit suffix on the fips code.  This will confuse other
+*people looking at my work, and it isn't going to influence that much.  Ignore this problem.  
+*CK: I can't deal with other possibilities now.  
+
+*AZ
+*•	La Paz County, Arizona (04-012): 
+*Created from part of Yuma County (04-027) effective January 1, 1983; 1980 population: 12,557.
+*•	Yuma County, Arizona (04-027): 
+*Part taken to create new La Paz County (04-012) effective January 1, 1983; 1980 detached population: 12,557.
+replace fips2=4027 if fips2==4012
+*Collapse necessary for the above
+
+*CO
+*•	Broomfield County, Colorado (08-014): 
+*Created from parts of Adams (08-001), Boulder (08-013), Jefferson (08-059), and Weld (08-123) counties effective November 15, 2001. 
+*The boundaries of Broomfield County reflect the boundaries of Broomfield city legally in effect on that date; estimated population: 39,177.
+*•	Adams County, Colorado (08-001): 
+*Part taken to create new Broomfield County (08-014) effective November 15, 2001; estimated detached population: 15,870.
+*•	Boulder County, Colorado (08-013): 
+*Part taken to create new Broomfield County (08-014) effective November 15, 2001; estimated detached population: 21,512.
+*•	Jefferson County, Colorado (08-059):
+*Part taken to create new Broomfield County (08-014) effective November 15, 2001; estimated detached population: 1,726.
+*•	Weld County, Colorado (08-123): 
+*Part taken to create new Broomfield County (08-014) effective November 15, 2001; estimated detached population: 69.
+*CK: Adams county had around 250k people in it in 2002.  
+*CK: Boulder County had around 250k people in it in 2002.
+*CK: jefferson county had around 500k people in it in 2002.
+*CK: weld had around 200k people in it in 2002.  
+*CK: the number of people moved out of those counties is at most 8%, so I'm ignoring the change in population.
+*CK: no action necessary
+
+*•	Adams County, Colorado (08-001): 
+*Annexed part of Denver County (08-031) coextensive with Denver city effective October 18, 1980; estimated population: 2,500. 
+*Part annexed to Denver County (08-031) effective May 17, 1988; estimated area 43.31 square miles with no estimated population.
+*•	Denver County, Colorado (08-001) coextensive with Denver city: 
+*Part annexed to Adams County (08-001) effective October 18, 1980; estimated population: 2,500. 
+*Annexed part of Adams County (08-001) effective May 17, 1988; estimated area 43.31 square miles with no estimated population. 
+*Part annexed to Arapahoe County (08-005) effective July 28, 1980; estimated area one square mile with no estimated population.
+*CK: I believe "no estimated population" means they estimate no one is there, so no action necessary for the last two lines.
+*CK: there is a typo.  Denver County is fips=8031.  
+*CK: however, since only 2500 people are involved, and this is denver, that isn't a large % change in the county, 
+*so I'm ignoring this.
+
+*•	Arapahoe County, Colorado (08-005):
+*Annexed part of Denver County (08-031) coextensive with Denver city effective July 28, 1980; estimated area one square mile with no estimated population.
+*CK: I believe "no estimated population" means they estimate no one is there, so no action necessary.
+
+*FL
+*•	Dade County, Florida (12-025):
+*Renamed as Miami-Dade County (12-086) effective July 22, 1997.
+*•	Miami-Dade County, Florida (12-086):
+*Renamed from Dade County (12-025) effective July 22, 1997.
+replace fips2=12086 if fips2==12025
+
+*•	Franklin County, Florida (12-037):
+*Boundary correction added unpopulated part of Gulf County (12-045); estimated area added: 10.4 square miles.
+*•	Gulf County Florida (12-045):
+*Boundary correction detached unpopulated part to Franklin County (12-037); estimated area detached: 10.4 square miles.
+*CK: no action required
+
+*•	DeSoto County, Florida (12-027):
+*Name corrected from De Soto County.
+*CK: no changes required from the above
+
+*GA
+*•	DeKalb County, Georgia (13-089):
+*Name corrected from De Kalb County.
+*CK: no changes required from the above
+
+*IL
+*•	LaSalle County, Illinois (17-099);
+*Name corrected from La Salle County (removing space).
+*CK: no changes required from the above
+
+*•	DeKalb County, Illinois (17-037):
+*Name corrected from De Kalb County.
+*CK: no changes required from the above
+
+*•	DuPage County, Illinois (17-043):
+*Name corrected from Du Page County.
+*CK: no changes required from the above
+
+*IN
+*•	DeKalb County, Indiana (18-033):
+*Name corrected from De Kalb County
+*CK: no changes required from the above
+
+*•	LaGrange County, Indiana (18-087): 
+*Name corrected from Lagrange County.
+*CK: no changes required from the above
+
+*•	LaPorte County, Indiana (18-091):
+*Name corrected from La Porte County.
+*CK: no changes required from the above
+
+*LA
+*•	LaSalle Parish, Louisiana (22-059)
+*Name corrected from La Salle Parish (removing space) reported as of January 1, 2011.
+*CK: no changes required from the above
+
+*MD
+*•	Montgomery County, Maryland (24-031): 
+*Added territory (Takoma Park city) from Prince George?s County (24-033) effective July 1, 1997; 1990 added population: 5,156.
+*•	Prince George's County, Maryland (24-033): 
+*Lost territory (Takoma Park city) to Montgomery County (24-031) effective July 1, 1997; 1990 detached population: 5,156.
+*CK: looking at these counties, the number of people shifted is a very small percentage of both counties.  This can be ignored.
+
+*MS
+*•	DeSoto County, Mississippi (28-033):
+*Name corrected from De Soto County.
+*CK: no changes required from the above
+
+*MO
+*•	DeKalb County, Missouri (29-063):
+*Name corrected from De Kalb County.
+*CK: no changes required from the above
+
+*The four counties with Kansas City have to be combined.  
+replace fips2=29555 if fips2==29037|fips2==29047|fips2==29095|fips2==29165
+
+*MT
+*•	Yellowstone National Park (county equivalent), Montana (30-113): 
+*Annexed to Gallatin (30-031) and Park (30-067) counties effective November 7, 1997.
+*•	Gallatin County, Montana (30-031):
+*Annexed unpopulated portion of deleted Yellowstone National Park (county equivalent) (30-113) effective November 7, 1997.
+*•	Park County, Montana (30-067): 
+*Annexed portion of deleted Yellowstone National Park (county equivalent) (30-113) effective November 7, 1997; 1990 added population: 52.
+*CK: no action required, 52 people can be ignored.
+
+*NM
+*•	Doña Ana County, New Mexico (35-013):
+*Name corrected from Dona Ana County (added tilde).
+*CK: no changes required from the above
+
+*•	De Baca County, New Mexico (35-011):
+*Name corrected from DeBaca County (erroneously changed in the 1980s).
+*CK: no changes required from the above
+
+*•	Cibola County, New Mexico (35-006): 
+*Created from part of Valencia County (35-061) effective June 19, 1981; 1980 population: 30,347.
+*•	Valencia County, New Mexico (35-061): 
+*Part taken to create new Cibola County (35-006) effective June 19, 1981; 1980 detached population: 30,347.
+replace fips2=35061 if fips2==35006
+*CK: collapse necessary for the above
+
+*NC
+*•	Carteret County, North Carolina (37-031):
+*Boundary correction added from and detached unpopulated parts to Craven County (37-049); estimated area added: five square miles; 
+*estimated area detached: 16 square miles.
+*•	Craven County, North Carolina (37-049):
+*Boundary correction added from and detached unpopulated parts to Carteret County (37-031); estimated area added: 16 square miles; 
+*estimated area detached: five square miles.
+*CK: no changes required from the above
+
+*ND
+*•	LaMoure County, North Dakota (38-045):
+*Name corrected from La Moure County.
+*CK: no changes required from the above
+
+*PA
+*•	McKean County, Pennsylvania (42-083):
+*Name corrected from Mc Kean County.
+*CK: no changes required from the above
+
+*SD
+*•	Oglala Lakota County, South Dakota (46-102)
+*Changed name and code from Shannon County (46-113) effective May 1, 2015.
+*•	Shannon County, South Dakota (46-113)
+*Changed name and code to Oglala Lakota County (46-102) effective May 1, 2015.
+replace fips2=46102 if fips2==46113
+
+*•	Washabaugh County, South Dakota (46-131): 
+*Combined into Jackson County (46-071) effective January 1, 1979.
+*•	Jackson County, South Dakota (46-071): 
+*Added all of the former Washabaugh County (46-131), effective January 1, 1979.
+replace fips2=46071 if fips2==46131
+*CK: collapse necessary for the above.
+
+*TN
+*•	DeKalb County, Tennessee (47-041):
+*Name corrected from De Kalb County.
+*CK: no changes required from the above
+
+*TX
+*•	DeWitt County, Texas (48-123):
+*Name corrected from De Witt County.
+*CK: no changes required from the above
+
+*VA
+*•	Bedford (independent) city, Virginia (51-515): 
+*Changed to town status and added to Bedford County (51-019) effective July 1, 2013.
+*Name and/or Code Changes or Corrections for Counties or County Equivalent Entities
+*•	Bedford County, Virginia (51-019):
+*Added the former independent city of Bedford (51-515) effective July 1, 2013; estimated net added population 6,222.
+replace fips2=51019 if fips2==51515
+*CK: collapse necessary for the above.
+
+*•	Clifton Forge (independent) city, Virginia (51-560): 
+*Changed to town status and added to Alleghany County (51-005) effective July 1, 2001.
+*Name and/or Code Changes or Corrections for Counties or County Equivalent Entities
+*•	Alleghany County, Virginia (51-005):
+*Added the former independent city of Clifton Forge (51-560) effective July 1, 2001; estimated added population: 4,289.
+replace fips2=51005 if fips2==51560
+*CK: collapse necessary for the above.
+
+*•	York County, Virginia (51-199):
+*Exchanged territory with Newport News (independent) city (51-700) effective July 1, 2007; estimated net detached population: 293.
+*•	Newport News (independent) city, Virginia (51-700):
+*Exchanged territory with York County (51-199) effective July 1, 2007; estimated net added population: 293.
+*CK: ignore this, it is 293 people.
+
+*•	South Boston (independent) city, Virginia (51-780): 
+*Changed to town status and added to Halifax County (51-083) effective June 30, 1995.
+*•	Halifax County, Virginia (51-083): 
+*Added the former independent city of South Boston (51-780) effective June 30, 1995.
+replace fips2=51083 if fips2==51780
+*CK: collapse necessary for the above.
+
+*•	Augusta County, Virginia (51-015): 
+*Part annexed to Waynesboro (independent) city (51-820) effective July 1, 1994; no estimated population available.
+*•	Waynesboro (independent) city, Virginia (51-820): 
+*Annexed part of Augusta County (51-015) effective July 1, 1994; no estimated population available.
+replace fips2=51015 if fips2==51820
+*CK: collapse necessary for the above.
+
+*•	Bedford County, Virginia (51-019):
+*Part annexed to Bedford (independent) city (51-515) effective July 1, 1993; estimated population: 200.
+*•	Bedford (independent) city, Virginia (51-515): 
+*Annexed part of Bedford County (51-019) effective July 1, 1993; estimated population: 200.
+*CK: these two locales come up again in the 2000s.  They are combined in the 2000s by me, so the fact
+*they exchanged territory here doesn't matter.  
+
+*•	Fairfax County, Virginia (51-059): 
+*Parts annexed to Fairfax (independent) city (51-600) effective December 31, 1991 and January 1, 1994; estimated population: 400.
+*•	Fairfax (independent) city, Virginia (51-600): 
+*Annexed parts of Fairfax County (51-059) effective December 31, 1991 and January 1, 1994; estimated population: 400.
+*CK: there are two changes over time
+*CK: ignore this, this is 400 people.  But these are combined below anyway.
+
+*•	Prince William County, Virginia (51-153):
+*Part annexed to Manassas Park (independent) city (51-685) effective December 31, 1990; no estimated population available.
+*•	Manassas Park (independent) city, Virginia (51-685):
+*Annexed part of Prince William County (51-153) effective December 31, 1990; no estimated population available.
+replace fips2=51153 if fips2==51685
+*CK: collapse necessary for the above.
+
+*•	Southampton County, Virginia (51-175): 
+*Part annexed to Franklin (independent) city (51-620) effective December 31, 1995; estimated population: 400.
+*•	Franklin (independent) city, Virginia (51-620): 
+*Annexed part of Southampton County (51-175) effective December 31, 1995; estimated population: 400.
+*CK: I looked at the pop of these areas, and even of the city, it is only about 1/16 of the pop.  So I'm ignoring this.
+
+*1980s
+
+*•	Albemarle County, Virginia (51-003): 
+*Part annexed to Charlottesville (independent) city (51-540) effective February 9, 1988; no estimated population available.
+*•	Charlottesville (independent) city, Virginia (51-540):
+*Annexed part of Albemarle County (51-003) effective February 9, 1988; no estimated population available.
+replace fips2=51003 if fips2==51540
+*CK: collapse necessary because of the above.
+
+*•	Augusta County, Virginia (51-015): 
+*Part annexed to Staunton (independent) city (51-790) effective December 31, 1986; estimated population: 2,300. 
+*Part annexed to Waynesboro (independent) city (51-820) effective December 31, 1985; estimated population 3,000.
+*•	Staunton (independent) city, Virginia (51-790): 
+*Annexed part of Augusta County (51-015) effective December 31, 1986; estimated population: 2,300.
+*•	Waynesboro (independent) city, Virginia (51-820): 
+*Annexed part of Augusta County (51-015) effective December 31, 1985; estimated population: 3,000.
+replace fips2=51015 if fips2==51790|fips2==51820
+*CK: collapse necessary because of the above.
+
+*•	Fairfax County, Virginia (51-059): 
+*Part annexed to Fairfax (independent) city (51-600) effective December 31, 1980; estimated population: 1,100.
+*•	Fairfax (independent) city, Virginia (51-600):
+*Annexed part of Fairfax County (51-059) effective December 31, 1980; estimated population: 1,100.
+*CK: these two locales also exchanged people in the 1990s.  I didn't do anything with them above,
+*but for this, I'll combine them, and that will solve the problem above that I ignored.  
+replace fips2=51059 if fips2==51600
+*CK: collapse necessary because of the above.
+
+*•	Greensville County, Virginia (51-081): 
+*Part annexed to Emporia (independent) city (51-595) effective January 1, 1988; estimated population: 400.
+*•	Emporia (independent) city, Virginia (51-595):
+*Annexed part of Greensville County (51-081) effective January 1, 1988; estimated population: 400.
+replace fips2=51081 if fips2==51595
+*CK: collapse necessary because of the above.
+
+*•	James City County, Virginia (51-095): 
+*Part annexed to Williamsburg (independent) city (51-830) effective January 1, 1983; estimated population: 400.
+*•	Williamsburg (independent) city, Virginia (51-830): 
+*Annexed part of James City County (51-095) effective December 31, 1983; estimated population: 400.
+*CK: inconsistency in when this happened in the source, but since I'm combining them, it doesn't matter when it happened.  
+replace fips2=51095 if fips2==51830
+*CK: collapse necessary because of the above.
+
+*•	Pittsylvania County, Virginia (51-143):
+*Part annexed to Danville (independent) city (51-590) effective December 31, 1987 and December 31, 1988; estimated population: 10,500.
+*•	Danville (independent) city, Virginia (51-590): 
+*Annexed part of Pittsylvania County (51-143) effective December 31, 1987 and December 31, 1988; estimated population: 10,500.
+replace fips2=51143 if fips2==51590|fips2==51143
+*CK: collapse necessary because of the above.
+
+*•	Prince William County, Virginia (51-153): 
+*Part annexed to Manassas (independent) city (51-683) effective December 31, 1983; estimated population: 300.
+*•	Manassas (independent) city, Virginia (51-683): 
+*Annexed part of Prince William County (51-153) effective December 31, 1983; estimated population: 300.
+*•	Prince William County, Virginia (51-153): 
+*Part taken when Manassas (51-683) and Manassas Park (51-685) became cities and separated from the county 
+*effective June 1, 1975, and May 1, 1975, respectively; 1970 population detached: 16,008.
+*•	Manassas (independent) city, Virginia (51-683):
+*Changed from a town to a city and became independent of Prince William County (51-153) effective June 1, 1975; 1970 population: 9,164.
+*•	Manassas Park (independent) city, Virginia (51-685):
+*Changed from a town to a city and became independent of Prince William County (51-153) effective May 1, 1975; 1970 population: 6,844.
+replace fips2=51153 if fips2==51683|fips2==51685
+*CK: collapse necessary because of the above.
+
+*•	Rockbridge County, Virginia (51-163):
+*Part annexed to Buena Vista (independent) city (51-530) effective December 31, 1983; estimated population: 200.
+*•	Buena Vista (independent) city, Virginia (51-530): 
+*Annexed part of Rockbridge County (51-163) effective December 31, 1983; estimated population: 200.
+replace fips2=51163 if fips2==51530
+*CK: collapse necessary because of the above.
+
+*•	Rockingham County, Virginia (51-165):
+*Part annexed to Harrisonburg (independent) city (51-660) effective December 31, 1982; estimated population: 5,500.
+*•	Harrisonburg (independent) city, Virginia (51-660):
+*Annexed part of Rockingham County (51-165) effective December 31, 1982; estimated population: 5,500.
+replace fips2=51165 if fips2==51660
+*CK: collapse necessary because of the above.
+
+*•	Southampton County, Virginia (51-175): 
+*Part annexed to Franklin (independent) city (51-620) effective December 31, 1985; estimated population: 600.
+*•	Franklin (independent) city, Virginia (51-620): 
+*Annexed part of Southampton County (51-175) effective December 31, 1985; estimated population: 600.
+replace fips2=51175 if fips2==51620
+*CK: collapse necessary because of the above.
+
+*•	Spotsylvania County, Virginia (51-177): 
+*Part annexed to Fredericksburg (independent) city (51-630) effective December 31, 1983; estimated population: 2,800.
+*•	Fredericksburg (independent) city, Virginia (51-630): 
+*Annexed part of Spotsylvania County (51-177) effective December 31, 1983; estimated population: 2,800.
+replace fips2=51177 if fips2==51630
+*CK: collapse necessary because of the above.
+
+*1970s
+
+*•	Bedford County, Virginia (51-019): 
+*Part annexed to Lynchburg (independent) city (51-520), effective December 31, 1975; estimated population: 1,500.
+*•	Lynchburg (independent) city, Virginia (51-680): 
+*Annexed part of Bedford County (51-019) effective December 31, 1975; estimated population: 1,500. Annexed part of Campbell County (51-031) 
+*effective December 31, 1975; estimated population: 9,000. 
+*•	Campbell County, Virginia (51-031): 
+*Part annexed to Lynchburg (independent) city (51-520) effective December 31, 1975; estimated population: 9,000.
+replace fips2=51031 if fips2==51520
+*CK: I'm ignoring the 1500 from bedford county, because I don't want to combine two entire counties.
+
+*•	Dinwiddie County, Virginia (51-053):
+*Part annexed to Petersburg (independent) city (51-730) effective December 31, 1971; estimated population: 3,400.
+*•	Petersburg (independent) city, Virginia (51-730): 
+*Annexed part of Dinwiddie County (51-053) effective December 31, 1971; estimated population: 3,400. Annexed part of Prince George County (51-149) 
+*effective December 31, 1971; estimated population: 4,700.
+replace fips2=51053 if fips2==51730
+*CK: collapse necessary because of the above.
+
+*•	Frederick County, Virginia (51-069): 
+*Part annexed to Winchester (independent) city (51-840) effective December 31, 1970; estimated population: 4,800.
+*•	Winchester (independent) city, Virginia (51-840): 
+*Annexed part of Frederick County (51-069) effective December 31, 1970; estimated population: 4,800.
+replace fips2=51069 if fips2==51840
+*CK: collapse necessary because of the above.
+
+*•	Montgomery County, Virginia (51-121): 
+*Part annexed to Radford (independent) city (51-750) effective December 31, 1976; estimated population: 400.
+*•	Radford (independent) city, Virginia (51-750): 
+*Annexed part of Montgomery County (51-121) effective December 31, 1976; estimated population: 400.
+replace fips2=51121 if fips2==51750
+*CK: collapse necessary because of the above.
+
+*•	Nansemond County, Virginia (51-123):
+*Combined into Suffolk (independent) city (51-800) effective July 1, 1972.
+*•	Suffolk (independent) city, Virginia (51-800): 
+*Added all of former Nansemond County (51-123) effective July 1, 1972.
+*CK This time, the county gets combined into the city.
+replace fips2=51800 if fips2==51123
+*CK: collapse necessary because of the above.
+
+*•	Prince George County, Virginia (51-149):
+*Part annexed to Petersburg (independent) city (51-730) effective December 31, 1975; estimated population: 4,700.
+replace fips2=51149 if fips2==51730
+*CK: collapse necessary because of the above.
+
+*•	Roanoke County, Virginia (51-161): 
+*Part annexed to Roanoke (independent) city (51-770) effective December 31, 1975; estimated population: 13,500.
+*•	Roanoke (independent) city, Virginia (51-770): 
+*Annexed part of Roanoke County (51-161) effective December 31, 1975; estimated population: 13,500.
+replace fips2=51161 if fips2==51770
+*CK: collapse necessary because of the above.
+
+*•	Washington County, Virginia (51-191):
+*Part annexed to Bristol (independent) city (51-520); estimated population: 4,800.
+*•	Bristol (independent) city, Virginia (51-520): 
+*Annexed part of Washington County (51-191); estimated population: 4,800.
+*CK: Since the above doesn't say when this happened, 
+*CK: Looking at the intercensal estimates for Bristol city (fips=51520) for the 1970s by race and sex, for both blacks and whites,
+*for both men and women, there was an abrupt drop in population from 1970 to 1971, and then an abrupt increase in population 
+*between 1973 and 1974.  
+*CK: however, since I'm just combining cities and counties when necessary now, it doesn't matter when it happened.
+replace fips2=51191 if fips2==51520
+*CK: collapse necessary because of the above.
+
+*•	York County, Virginia (51-199): 
+*Part taken when Poquoson (51-735) became a city and separated from the county effective June 1, 1975; 1970 population detached: 5,441.
+*•	Poquoson (independent) city, Virginia (51-735): 
+*Changed from a town to a city and became independent of York County (51-199) effective June 1, 1975; 1970 population: 5,441.
+*CK: york county is mentioned above, but no change was done above, because the pop involved was small.
+replace fips2=51199 if fips2==51735
+*CK: Collapse necessary for the above
+
+
+
