@@ -66,3 +66,4 @@ CPS/
 
 # code makes its own output, so hide it
 output/*
+graphics/*
