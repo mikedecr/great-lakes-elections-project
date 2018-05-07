@@ -9,11 +9,10 @@ fix availability of turnout data?
 
 Do this as linearly as possible
 
-- start with EAVS
-- SPAE/waits
+[x] start with EAVS
+[x] SPAE/waits
 - VEP
-- Normalized measures (CPS)
-- move to CPS
+- Normalized measures (including CPS)
 
 
 

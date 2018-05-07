@@ -13,56 +13,56 @@
 # # charles:
 #
 # Here’s the cookbook version:
-# 1.       For respondents who give replies 1-4 to the wait-time question (q13 in 2016), impute minutes using the midpoint of the response intervals.  I.e., 1à0 minutes, 2à 5 minutes, 3à20 minutes, 4à45 minutes.
+# 1. For respondents who give replies 1-4 to the wait-time question (q13 in 2016), impute minutes using the midpoint of the response intervals.  I.e., 1à0 minutes, 2à 5 minutes, 3à20 minutes, 4à45 minutes.
 # 2.       For respondents who give replied # 5 (> 60 minutes), do the following:
 # a.       For respondents who respond to the open-ended prompt (q13_t in 2016), use that response to code the number of minutes.
 # b.      For respondents who do not respond to the open-ended prompt, take the average of the responses from step 2.a.
 
 
 
-
-
-
-
-rm(list = ls())
-
 library("magrittr")
 library("tidyverse")
 library("ggplot2")
-library("stringr")
 
-#  custom ggtheme, import from Github
-source("https://raw.githubusercontent.com/mikedecr/theme-mgd/master/theme_mgd.R")
-theme_set(theme_mgd()) # set default theme
-library("extrafont")   # load font faces into R
-
-# ----------------------------------------------------
-#   working directory
-# ----------------------------------------------------
-
-setwd("~/Box Sync/PA/MIT/waits")
-
-# output directory
-dir.create("output")
-
+library("here")
 
 
 # ----------------------------------------------------
 #   Joyce parameters
 # ----------------------------------------------------
+joyce_states <- c("IL", "IN", "MI", "MN", "OH", "WI")
 
-joyce_states <- c("IL", "IN", "MI", "MN", "OH", "WI") %>% print
-joyce_fips <- c(IL = 17, IN = 18, MI = 26, MN = 27, OH = 39, WI = 55) %>% print
+(state_fips <- read_csv(here("data/census/census-state-fips.csv")))
+
+(joyce_fips <- filter(state_fips, state_abb %in% joyce_states))
 
 
 # ----------------------------------------------------
 #   SPAE
 # ----------------------------------------------------
 
+# --- data -----------------
 
-# data, recode wait variable
+# check for unzipped
+if ("SPAE" %in% list.files(here("data"))) {
+  print("SPAE already unzipped")
+} else {
+  dir.create(here("data/SPAE"))
+  unzip(here("data/spae.zip"), exdir = here("data/SPAE"))
+}
 
-sp <- read_tsv("spae/MITU0022_OUTPUT.tab") %>%
+
+# read data
+
+# read.table(., sep = "\t") fails to get the correct number of obs
+read.table(here("data/SPAE/MITU0022_OUTPUT.tab"),
+           sep = "\t", header = TRUE) %>%
+as_data_frame() %>%
+print()
+
+# going the read_tsv route despite small number of parsing failues
+# recode the wait variable
+sp <- read_tsv(here("data/SPAE/MITU0022_OUTPUT.tab")) %>%
       as_data_frame() %>%
       mutate(wait_time = case_when(Q13 == 1 ~ "1. Not at all",
                                    Q13 == 2 ~ "2. Less than 10 minutes",
@@ -72,14 +72,14 @@ sp <- read_tsv("spae/MITU0022_OUTPUT.tab") %>%
                                    Q13 == 6 ~ "9. I don't know")) %>%
       print
 
-
-table(sp$wait_time, sp$Q13, exclude = NULL)
+# check if the recoding is good
+sp %$% table(wait_time, Q13, exclude = NULL)
 
 
 # plot by state
 
 sp %>%
-filter(inputstate %in% joyce_fips) %>%
+filter(inputstate %in% joyce_fips$state_FIPS) %>%
 mutate(state = case_when(inputstate == 17 ~ "Illinois",
                          inputstate == 18 ~ "Indiana",
                          inputstate == 26 ~ "Michigan",
@@ -108,32 +108,24 @@ levels(as.factor(sp$Q13_t))
 #   export SPAE "specify" answers to hand-code
 # ----------------------------------------------------
 
+dir.create(here("data/waits"))
+
 sp %>%
 filter(Q13 == 5) %>%
 select(caseid, Q13, Q13_t, inputstate) %>%
-write_csv("spae/specify-to-do.csv")
+print() %>%
+write_csv(here("data/waits/specify-to-do.csv"))
 
+#   hand-coding of text responses happens here
 
-
-# ----------------------------------------------------
-#   hand-coding happens here
-# ----------------------------------------------------
-
-# do hand coding in excel?
-# maybe should do it algorithmically (like 88 unique labels)
-
-
-# ----------------------------------------------------
 #   re-import hand-coded stuff
-# ----------------------------------------------------
 
-sp_specify <- read_csv("spae/specify-recode.csv") %>%
+sp_specify <- read_csv(here("data/waits/specify-recode.csv")) %>%
               mutate(Q13_oe = as.double(Q13_oe)) %>%
               print
 
 
 # merge and recode to integer (minutes)
-
 sp <-
   left_join(sp, sp_specify, by = c("caseid", "Q13")) %>%
   mutate(wait_int = case_when(Q13 == 1 ~ 0,
@@ -142,6 +134,7 @@ sp <-
                               Q13 == 4 ~ 45),
          wait_int = ifelse(Q13 == 5, Q13_oe, wait_int)) %>%
          print
+
 
 # if "more than 1 hour" but not specified, impute mean from those who did specify
 mean_specified <- filter(sp, Q13 == 5) %$%
@@ -163,14 +156,23 @@ table(sp$wait_int, exclude = NULL)
 #   contains no "specify" column, so no hand-coding required
 # ----------------------------------------------------
 
-cc <- readr::read_tsv("cces/CCES16_Common_OUTPUT_Jul2017_VV.tab") %>%
+# check for unzipped
+if ("CCES" %in% list.files(here("data"))) {
+  print("CCES already unzipped")
+} else {
+  dir.create(here("data/CCES"))
+  unzip(here("data/cces.zip"), exdir = here("data/CCES"))
+}
+
+
+cc <- readr::read_tsv(here("data/cces/CCES16_Common_OUTPUT_Jul2017_VV.tab")) %>%
       mutate(wait_time = case_when(CC16_404 == 1 ~ "1. Not at all",
                                    CC16_404 == 2 ~ "2. Less than 10 minutes",
                                    CC16_404 == 3 ~ "3. 10-30 minutes",
                                    CC16_404 == 4 ~ "4. 31 minutes to 1 hour",
                                    CC16_404 == 5 ~ "5. More than 1 hour (specify)",
                                    CC16_404 == 6 ~ "9. I don't know")) %>%
-      print
+      print()
 
 
 # recode to integer (minutes)
@@ -189,7 +191,7 @@ cc %$% table(wait_time, wait_int, exclude = NULL)
 
 # plot
 cc %>%
-filter(inputstate %in% joyce_fips) %>%
+filter(inputstate %in% joyce_fips$state_FIPS) %>%
 mutate(state = case_when(inputstate == 17 ~ "Illinois",
                          inputstate == 18 ~ "Indiana",
                          inputstate == 26 ~ "Michigan",
@@ -212,7 +214,7 @@ ggplot(aes(x = wait_time, y = pct)) +
 # ----------------------------------------------------
 
 
-census_fips <- read_csv("census/census-state-fips.csv") %>%
+census_fips <- read_csv(here("data/census/census-state-fips.csv")) %>%
                rename(inputstate = state_FIPS) %>%
                print
 
@@ -223,14 +225,10 @@ spcc <-
             select(cc, inputstate, wait_time, countyname, wait_int) %>%
               mutate(dataset = "CCES")) %>%
   left_join(., census_fips, by = "inputstate") %>%
-  mutate(joyce_state = case_when(inputstate == 17 ~ "Illinois",
-                                 inputstate == 18 ~ "Indiana",
-                                 inputstate == 26 ~ "Michigan",
-                                 inputstate == 27 ~ "Minnesota",
-                                 inputstate == 39 ~ "Ohio",
-                                 inputstate == 55 ~ "Wisconsin")) %>%
-  select(dataset, state_abb, inputstate, joyce_state, countyname, wait_time, wait_int) %>%
-  print
+  mutate(joyce_state = ifelse(state_abb %in% joyce_fips$state_abb, 1, 0)) %>%
+  select(dataset, state_abb, inputstate, joyce_state,
+         countyname, wait_time, wait_int) %>%
+  print()
 
 
 
@@ -251,22 +249,13 @@ state_waits <- spcc %>%
                          MOE = se_wait * qt(.975, n() - 1),
                          MOE = round(MOE, 1)) %>%
                select(inputstate, state_abb, mean_wait, MOE) %>%
-               print
+               print()
 
 
-write_csv(state_waits, "output/state-avg-waits.csv")
-
-
-# all states, highlight joyce?
-# ask Barry about what he wants
+write_csv(state_waits, here("output/waits/state-avg-waits.csv"))
 
 
 
-# Joyce states
-state_waits %>%
-filter(inputstate %in% joyce_fips) %>%
-print %>%
-write.csv(., "output/joyce-state-avg-waits.csv")
 
 
 # ----------------------------------------------------
@@ -289,10 +278,8 @@ ggplot(aes(x = wait_int, y = prop)) +
        y = "Percent",
        fill = NULL) +
   theme(axis.text.x = element_text(angle = 45, vjust=0.75)) +
-  geom_vline(data = spcc_state, aes(xintercept = mean_wait), color = "red")
+  geom_vline(data = state_waits, aes(xintercept = mean_wait), color = "red")
 
-# ggsave("output/compare-waits-data.pdf", height = 5, width = 9)
-# embed_fonts("output/compare-waits-data.pdf")
 
 
 spcc %>%
@@ -316,8 +303,6 @@ ggplot(aes(x = as.factor(wait_int), y = prop)) +
   theme(axis.text.x = element_text(angle = 45, vjust=0.75))
 
 
-ggsave("output/compare-waits-factor.pdf", height = 15, width = 19)
-embed_fonts("output/compare-waits-factor.pdf")
 
 
 
@@ -338,16 +323,15 @@ ggplot(aes(x = wait_int, y = prop)) +
        y = "Percent",
        color = NULL) +
   theme(axis.text.x = element_text(angle = 45, vjust=0.75)) +
-  geom_vline(data = spcc_state, aes(xintercept = mean_wait),
+  geom_vline(data = state_waits, aes(xintercept = mean_wait),
              color = "black")
 
-# ggsave("output/compare-waits-point.pdf", height = 5, width = 9)
-# embed_fonts("output/compare-waits-point.pdf")
+
 
 
 # ----------------------------------------------------
-#   which counties to keep?
-#   set threshold: n = 50?
+#   County level
+#   set threshold: n = 50
 # ----------------------------------------------------
 
 threshold <- 50
@@ -362,7 +346,7 @@ keep_counties <-
          total = CCES + SPAE) %>%
   arrange(desc(total)) %>%
   filter(total >= threshold) %>%
-  print
+  print()
 
 
 
@@ -375,11 +359,4 @@ spcc_county <-
   print
 
 
-write_csv(spcc_county, "output/county-avg-waits.csv")
-
-
-# joyce counties only
-spcc_county %>%
-filter(inputstate %in% joyce_fips) %>%
-print %>%
-write_csv(., "output/joyce-county-avg-waits.csv")
+write_csv(spcc_county, here("output/waits/county-avg-waits.csv"))
