@@ -14,7 +14,7 @@ Do this as linearly as possible
 - [x] VEP
 - Normalized measures (including CPS)
 - [x] Vote methods (do 85% threshold for vote methods...)
- - Check about Oregon
+  - Check about Oregon
 
 
 Codebook notes for vote methods
