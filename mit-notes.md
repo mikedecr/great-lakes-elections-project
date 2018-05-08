@@ -13,7 +13,8 @@ Do this as linearly as possible
 - [x] SPAE/waits
 - [x] VEP
 - Normalized measures (including CPS)
-- [ ] Vote methods (do 85% threshold for vote methods...)
+- [x] Vote methods (do 85% threshold for vote methods...)
+ - Check about Oregon
 
 
 Codebook notes for vote methods
