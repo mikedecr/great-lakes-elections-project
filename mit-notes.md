@@ -12,9 +12,10 @@ Do this as linearly as possible
 - [x] start with EAVS
 - [x] SPAE/waits
 - [x] VEP
-- Normalized measures (including CPS)
 - [x] Vote methods (do 85% threshold for vote methods...)
   - Check about Oregon
+- [ ] Normalized measures (including CPS)
+
 
 
 Codebook notes for vote methods
