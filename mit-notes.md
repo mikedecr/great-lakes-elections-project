@@ -13,7 +13,13 @@ Do this as linearly as possible
 - [x] SPAE/waits
 - [x] VEP
 - Normalized measures (including CPS)
+- [ ] Vote methods (do 85% threshold for vote methods...)
 
+
+Codebook notes for vote methods
+
+- Oregon double counts civilian absentee and provisional as also by mail, since it's ALL mail. Ask people what to do about this?
+- codebook to describe the table, since the "total" idea could be confusing
 
 
 
