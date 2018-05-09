@@ -1,5 +1,5 @@
 ---
-title: Great Lakes Elections Project 2016 (MIT Election Sciences Lab)
+title: Great Lakes Elections Project 2016 (MIT Election Data and Science Lab)
 author: Michael DeCrescenzo
 ---
 

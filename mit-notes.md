@@ -12,10 +12,15 @@ Do this as linearly as possible
 - [x] start with EAVS
 - [x] SPAE/waits
 - [x] VEP
-- [x] Vote methods (do 85% threshold for vote methods...)
+- [ ] Vote methods (do 85% threshold for vote methods...)
   - Check about Oregon
 - [ ] Normalized measures (including CPS)
-
+  - include vote methods in normalized (compare new and old)
+  - Does CPS do what you think it does?
+  - are all of the things commented clearly?
+- [ ] Whatever Evan has for you?
+- [ ] Build file
+- [ ] exhaustive checks for comments, todos, alerts
 
 
 Codebook notes for vote methods
