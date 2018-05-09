@@ -135,3 +135,6 @@ table(F2, exclude = NULL)
 prop_methods %>%
   print() %>%
   write_csv(., "output/normalized/voting-methods.csv")
+
+
+print("EAVS vote methods code completed without error")

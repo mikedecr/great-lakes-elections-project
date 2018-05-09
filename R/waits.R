@@ -360,3 +360,6 @@ spcc_county <-
 
 
 write_csv(spcc_county, here("output/waits/county-avg-waits.csv"))
+
+
+print("Wait times code completed without error")

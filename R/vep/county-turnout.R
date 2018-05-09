@@ -449,15 +449,4 @@ ggsave(here("graphics/compare-wisconsin-methods.pdf"), height = 3, width = 6)
 
 
 
-#
-#
-# to_plus %>%
-#   filter(State == "WI") %>%
-#   plot(turnout_eavs ~ mcturnout, data = .)
-# abline(a = 0, b = 1)
-#
-#
-#
-# # to_plus %>%
-# #   filter(State == "WI") %$%
-# #   identify(turnout_eavs ~ mcturnout, labels = county_name)
+print("Turnout code completed without error")

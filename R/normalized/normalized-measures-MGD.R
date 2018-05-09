@@ -12,15 +12,6 @@ library("tidyverse")
 library("ggplot2")
 
 
-# --- DATA -----------------------
-
-# EAVS
-
-# (eavs <- readRDS("eavs/2016/data/joyce-eavs-2016-unlabelled.RDS"))
-
-
-
-
 
 
 # --- Registration -----------------------
@@ -35,9 +26,11 @@ library("ggplot2")
 # Percentage of new voter registrations rejected
 #   (EAVS (A5e) / ((A5a)-(A5d+A5f))) (minus duplicates and COA)
 
+(eavs_state <- here("output/eavs/state/"))
+
 # EAVS A5a
-regs <- left_join(read_csv("eavs/2016/output/state/A/A-1-4-reg-total.csv"),
-                  read_csv("eavs/2016/output/state/A/A-5-reg-sub.csv")) %>%
+regs <- left_join(read_csv(paste0(eavs_state, "A/A-1-4-reg-total.csv")),
+                  read_csv(paste0(eavs_state, "A/A-5-reg-sub.csv"))) %>%
   select(State:joyce, A1a, A5a, A5b, A5e, A5f, A5d) %>%
   rename(new_registrations_received = A5a,
          total_registered_voters = A1a,
@@ -70,10 +63,10 @@ regs <- left_join(read_csv("eavs/2016/output/state/A/A-1-4-reg-total.csv"),
 
 uocava <-
   left_join(
-    read_csv("eavs/2016/output/state/B/B-1-2-uocava-sent.csv"),
-    read_csv("eavs/2016/output/state/B/B-8-9-10-11-12-uocava-counted.csv")) %>%
+    read_csv(paste0(eavs_state, "B/B-1-2-uocava-sent.csv")),
+    read_csv(paste0(eavs_state, "B/B-8-9-10-11-12-uocava-counted.csv"))) %>%
   left_join(
-    read_csv("eavs/2016/output/state/B/B-13-14-15-16-17-18-uocava-rejected.csv")) %>%
+    read_csv( paste0(eavs_state, "B/B-13-14-15-16-17-18-uocava-rejected.csv"))) %>%
   select(State:joyce, B1a, B2a, B8a, B13a) %>%
   rename(uocava_ballots_sent = B1a,
          uocava_ballots_returned = B2a,
@@ -101,8 +94,8 @@ uocava <-
 # Percentage of civilian absentee ballots transmitted that are not returned for counting  ((C1a - C1b) / (C1a))
 
 absentee <-
-  left_join(read_csv("eavs/2016/output/state/C/C-1-3-absentee-sent-fate.csv"),
-            read_csv("eavs/2016/output/state/C/C-4-absentee-returned-fate.csv")) %>%
+  left_join(read_csv(paste0(eavs_state, "C/C-1-3-absentee-sent-fate.csv")),
+            read_csv(paste0(eavs_state, "C/C-4-absentee-returned-fate.csv"))) %>%
   rename(absentee_ballots_sent = C1a,
          absentee_ballots_returned = C1b,
          absentee_ballots_accepted = C4a,
@@ -121,7 +114,7 @@ absentee <-
 
 # dropping MOEs because these are non-normal outcomes
 # and MOEs don't make sense
-waits <- read_csv("waits/output/state-avg-waits.csv") %>%
+waits <- read_csv("output/waits/state-avg-waits.csv") %>%
   rename(State = state_abb) %>%
   select(-inputstate, -MOE) %>%
   print()
@@ -133,11 +126,11 @@ waits <- read_csv("waits/output/state-avg-waits.csv") %>%
 # Percentage of voters who say polling place was easy to find (Q5)
 # Percentage of voters confident their vote was counted as cast (Q33)
 
-census <- read_csv("waits/census/census-state-fips.csv") %>%
+census <- read_csv("data/census/census-state-fips.csv") %>%
   rename(inputstate = state_FIPS) %>%
   print()
 
-spae <- read_tsv("waits/spae/MITU0022_OUTPUT.tab") %>%
+spae <- read_tsv("data/spae/MITU0022_OUTPUT.tab") %>%
   mutate(wt = weight / max(weight, na.rm = TRUE)) %>%
   left_join(., census, by = "inputstate") %>%
   print()
@@ -169,7 +162,7 @@ ballot_confidence <- spae %>%
 
 # --- US Elections Project -----------------------
 
-usep <- read_csv("vep/data/usep-state-vep-2016.csv") %>%
+usep <- read_csv("data/vep/usep-state-vep-2016.csv") %>%
   select(State, `VEP Total Ballots Counted`) %>%
   setNames(c("state", "vep_turnout")) %>%
   filter(!(state %in% c("United States", "District of Columbia"))) %>%
@@ -187,14 +180,16 @@ usep <- read_csv("vep/data/usep-state-vep-2016.csv") %>%
 # Percentage of nonvoters who say they didn't vote because of polling place problems (10)
 # Percentage of nonvoters who say they didn't vote because of a permanent illness or disability (1)
 
-
-if ("IPUMPS-cps_00001.csv" %in% list.files("cps")) {
+# unzip CPS if it isn't already
+if ("IPUMPS-cps_00001.csv" %in% list.files(here("data/cps"))) {
   print("CPS Data already uncompressed")
 } else {
-  R.utils::gunzip('cps/IPUMPS-cps_00001.csv.gz', remove = FALSE)
+  R.utils::gunzip(here('data/cps/IPUMPS-cps_00001.csv.gz'), remove = FALSE)
 }
 
-cps <- read_csv("cps/IPUMPS-cps_00001.csv") %>%
+
+# read CPS data and do simple recoding
+cps <- read_csv(here("data/cps/IPUMPS-cps_00001.csv")) %>%
   mutate(nonvote = case_when(VOTED == 1 ~ 1),
          registered = case_when(VOTED == 2 | VOREG == 2 ~ 1),
          eligible = case_when(VOYNOTREG != 8 & VOTED %in% c(1, 2) ~ 1,
@@ -206,9 +201,7 @@ cps <- read_csv("cps/IPUMPS-cps_00001.csv") %>%
 
 
 
-
-
-
+# aggregate by state (percentages)
 cps_norms <- cps %>%
   group_by(STATEFIP) %>%
   summarize(pct_vep_registered =
@@ -268,8 +261,6 @@ total_absentee <-
 
 # --- normalized table -----------------------
 
-evan_file %>%
-  left_join()
 
 ls()
 
@@ -297,6 +288,10 @@ normalized_final <- evan_file %>%
   left_join(waits) %>%
   print()
 
-write_csv(normalized_final, "normalized/normalized-mgd.csv")
+write_csv(normalized_final, here("output/normalized/normalized-mgd.csv"))
+
+
+
+print("Normalized measures code completed without error")
 
 # --- Don't forget to check county turnout again -----------------------

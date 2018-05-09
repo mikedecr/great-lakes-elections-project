@@ -93,6 +93,10 @@ source("R/EAVS/EAVS-joyce-munic.R", echo = TRUE)
 
 
 
+print("EAVS code completed without error")
+
+
+
 # --- things we don't need anymore? -----------------
 
 
