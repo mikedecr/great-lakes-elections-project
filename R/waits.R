@@ -252,6 +252,7 @@ state_waits <- spcc %>%
                print()
 
 
+dir.create(here("output/waits"))
 write_csv(state_waits, here("output/waits/state-avg-waits.csv"))
 
 

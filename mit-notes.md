@@ -12,21 +12,27 @@ Do this as linearly as possible
 - [x] start with EAVS
 - [x] SPAE/waits
 - [x] VEP
-- [ ] Vote methods (do 85% threshold for vote methods...)
-  - Check about Oregon
-- [ ] Normalized measures (including CPS)
-  - include vote methods in normalized (compare new and old)
-  - Does CPS do what you think it does?
-  - are all of the things commented clearly?
-- [ ] Whatever Evan has for you?
-- [ ] Build file
+- [x] Vote methods
+  - [ ] (ask about doing 85% threshold for vote methods...)
+- [ ] CPS
+  - [ ] Get Barry's help with downloading it?
+  - [ ] not clear why the CPS that I have lacks weights
+  - [ ] how to code turnout (count refusals/DK as nonvotes?)
+  - [ ] how to code eligibility
+- [ ] Normalized measures
+  - Build it all into one file
+  - sort columns
 - [ ] exhaustive checks for comments, todos, alerts
+- [ ] Whatever Evan has for you?
+- [ ] Build-all file
+- [ ] number of states? 50, 51, 54? (ask?)
+- [ ] check that final file contains all normalized measures
 
 
-Codebook notes for vote methods
+Codebook notes
 
-- Oregon double counts civilian absentee and provisional as also by mail, since it's ALL mail. Ask people what to do about this?
-- codebook to describe the table, since the "total" idea could be confusing
+- [ ] make a codebook
+- [ ] voting methods figures aren't always mutually exclusive
 
 
 

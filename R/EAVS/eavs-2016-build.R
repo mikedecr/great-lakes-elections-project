@@ -74,6 +74,7 @@ if (eavs_filename %in% list.files(where_eavs)) {
 
 eavs <- haven::read_dta(paste0(where_eavs, eavs_filename)) %>%
   mutate_all(labelled::remove_labels) %>%
+  filter(State %in% c(state.abb, "DC")) %>%
   print() %>%
   saveRDS(paste0(where_eavs, "eavs-2016-unlabelled.RDS"))
 
@@ -86,64 +87,11 @@ eavs <- haven::read_dta(paste0(where_eavs, eavs_filename)) %>%
 # --------------------------------------
 
 # other files:
+# 1. aggregate (calls the tabulation file)
+# 2. jurisdiction data using columns from (1)
 source("R/EAVS/EAVS-aggregate-A-C.R", echo = TRUE)
-# aggregate file calls the tabulate file
-
 source("R/EAVS/EAVS-joyce-munic.R", echo = TRUE)
 
 
-
+# --- confirm -----------------
 print("EAVS code completed without error")
-
-
-
-# --- things we don't need anymore? -----------------
-
-
-#
-#
-# #----------------------------------------
-# #   execute
-# #----------------------------------------
-#
-# # Begin by trimming states to Joyce
-# (joyce_states <- c("IL", "IN", "MI", "MN", "OH", "WI"))
-#
-# # would include the FIPS codes for these states
-# # but the Wisconsin FIPS is borked
-#
-#
-# # removes stata labels, trim to US states
-# d <- haven::read_dta("data/eavs-2016.dta") %>%
-#      filter(State %in% state.abb) %>%
-#      mutate_all(labelled::remove_labels) %>%
-#      print
-#
-# saveRDS(d, "data/eavs-2016-unlabelled.RDS")
-#
-#
-#
-# # limits to Great Lakes only
-#
-# d %>%
-# filter(State %in% joyce_states) %>%
-# saveRDS("data/joyce-eavs-2016-unlabelled.RDS")
-#
-
-
-
-
-
-# source("R/EAVS-2016-A.R")
-# source("R/EAVS-2016-B.R")
-# source("R/EAVS-2016-C.R")
-# source("R/eavs-2016-munic.R")
-
-# ----------------------------------------------------
-#   aggregation
-# ----------------------------------------------------
-
-# not clear how to do missingness
-# Not applicable == 0 seems sensible
-# Not available == ?
-# Uncoded missing == ?
