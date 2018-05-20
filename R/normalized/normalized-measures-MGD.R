@@ -310,8 +310,6 @@ names(cps)
 count(cps, STATEFIP, YEAR) %>%
   print(n = nrow(.))
 
-count(cps2, registered, voted, eligible)
-count(cps2, voted, registered, reg_problem)
 
 
 # aggregate by state (percentages)
@@ -348,11 +346,10 @@ cps_norms <- cps %>%
 
 
 
-# --- normalized table -----------------------
+# --- final normalized table -----------------------
 
 
-
-evan_file <- readxl::read_excel("~/Dropbox/Great Lakes Election Project/normalized measures/normalized measures.xlsx") %>%
+evan_file <- readxl::read_excel("~/Dropbox/PA/Great Lakes Election Project/normalized measures/normalized measures.xlsx") %>%
   rename(State = state) %>%
   print()
 

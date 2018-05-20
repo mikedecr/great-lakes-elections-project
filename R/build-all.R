@@ -6,13 +6,16 @@
 
 
 
-source("R/EAVS/eavs-2016-build.R")
+source("R/EAVS/eavs-2016-build.R", echo = TRUE)
 beepr::beep(4)
-source("R/waits.R")
+source("R/waits.R", echo = TRUE)
 beepr   ::beep(4)
-source("R/VEP/county-turnout.R")
+source("R/VEP/county-turnout.R", echo = TRUE)
 beepr::beep(4)
-source("R/normalized/eavs-2016-vote-methods.R")
-beepr::beep(4)
-source("R/normalized/normalized-measures-MGD.R")
+
+# This should be in normalized-measures.R
+# source("R/normalized/eavs-2016-vote-methods.R", echo = TRUE)
+# beepr::beep(4)
+
+source("R/normalized/normalized-measures-MGD.R", echo = TRUE)
 beepr::beep(4)

@@ -20,6 +20,7 @@ Do this as linearly as possible
   - [ ] how to code turnout (count refusals/DK as nonvotes?)
   - [ ] how to code eligibility
 - [ ] Normalized measures
+  + fix Evan file merge
   - Build it all into one file
   - sort columns
 - [ ] exhaustive checks for comments, todos, alerts
