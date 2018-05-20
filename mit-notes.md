@@ -13,7 +13,7 @@ Do this as linearly as possible
 - [x] SPAE/waits
 - [x] VEP
 - [x] Vote methods
-  - [ ] (ask about doing 85% threshold for vote methods...)
+  - [ ] ask about doing 85% threshold for vote methods
 - [ ] CPS
   - [ ] Get Barry's help with downloading it?
   - [ ] not clear why the CPS that I have lacks weights

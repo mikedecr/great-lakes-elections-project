@@ -257,37 +257,7 @@ usep <- read_csv("data/vep/usep-state-vep-2016.csv") %>%
 
 # --- CPS -----------------------
 
-list.files(here("data/cps/vrs-2016"))
-# unzip CPS if it isn't already
-if ("cps_00002.dat" %in% list.files(here("data/cps/vrs-2016"))) {
-  print("CPS Data already uncompressed")
-} else {
-   R.utils::gunzip(here('data/cps/vrs-2016/cps_00002.dat.gz'),
-                   remove = FALSE, skip = TRUE)
-}
-
-
-cps_ddi <- here("data/cps/vrs-2016/cps_00002.xml") %>%
-  read_ipums_ddi() %>%
-  print()
-
-cps_data <- here("data/cps/vrs-2016/cps_00002.dat") %>%
-  read_ipums_micro(ddi = cps_ddi, data_file = .) %>%
-  print()
-
-
-
-#
-# cps_ddi <- read_ipums_ddi(cps_ddi_file) # Contains metadata, nice to have as separate object
-# cps_data <- read_ipums_micro(cps_ddi_file, data_file = cps_data_file)
-#
-# ipums_conditions()
-
-
-# --- CPS old -----------------
-
 # codebook: https://cps.ipums.org/cps-action/variables/group?id=voter_voter
-
 
 # unzip CPS if it isn't already
 if ("IPUMPS-cps_00001.csv" %in% list.files(here("data/cps"))) {
@@ -310,11 +280,11 @@ if ("IPUMPS-cps_00001.csv" %in% list.files(here("data/cps"))) {
 
 
 # read CPS data and do simple recoding
-cps16 <- read_csv(here("data/cps/IPUMPS-cps_00001.csv")) %>%
+cps_raw <- read_csv(here("data/cps/IPUMPS-cps_00001.csv")) %>%
   filter(YEAR == 2016) %>%
   print()
 
-cps <- cps16 %>%
+cps <- cps_raw %>%
   mutate(voted = case_when(VOTED %in% c(1, 96, 97, 98) ~ 0,
                            VOTED == 2 ~ 1),
          registered = case_when(voted == 1 ~ 1,
