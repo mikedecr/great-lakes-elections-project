@@ -37,7 +37,7 @@ options(warn = 0)
 
 source("R/EAVS/eavs-2016-build.R", echo = TRUE)
 beepr::beep(4)
-source("R/waits.R", echo = TRUE)
+source("R/wait-times/waits.R", echo = TRUE)
 beepr   ::beep(4)
 source("R/VEP/county-turnout.R", echo = TRUE)
 beepr::beep(4)

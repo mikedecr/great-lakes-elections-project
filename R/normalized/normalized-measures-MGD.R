@@ -222,10 +222,6 @@ spae <- read_tsv("data/spae/MITU0022_OUTPUT.tab") %>%
 
 
 
-spae %>%
-  group_by(state) %>%
-  skim(weight)
-
 
 polling_place <- spae %>%
   filter(!is.na(Q5)) %>%
