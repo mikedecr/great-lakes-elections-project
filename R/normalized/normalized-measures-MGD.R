@@ -11,7 +11,6 @@ library("janitor")
 library("magrittr")
 library("tidyverse")
 library("ggplot2")
-library("ipumsr")
 
 
 
@@ -35,9 +34,9 @@ regs <- left_join(read_csv(paste0(eavs_state, "A/A-1-4-reg-total.csv")),
   rename(new_registrations_received = A5a,
          total_registered_voters = A1a,
          new_valid_registrations = A5b,
-         new_rejected_registrations = A5e) %>%
+         new_registrations_rejected = A5e) %>%
   mutate(pct_registrations_rejected =
-           new_rejected_registrations /
+           new_registrations_rejected /
            (new_registrations_received - A5d - A5f)) %>%
   select(-(starts_with("A5"))) %>%
   print()
@@ -98,7 +97,7 @@ absentee <-
             read_csv(paste0(eavs_state, "C/C-4-absentee-returned-fate.csv"))) %>%
   rename(absentee_ballots_sent = C1a,
          absentee_ballots_returned = C1b,
-         absentee_ballots_accepted = C4a,
+         absentee_ballots_counted = C4a,
          absentee_ballots_rejected = C4b) %>%
   mutate(pct_absentee_ballots_rejected =
            (absentee_ballots_rejected / absentee_ballots_returned),
@@ -212,7 +211,8 @@ waits <- read_csv("output/waits/state-avg-waits.csv") %>%
 
 census <- read_csv("data/census/census-state-fips.csv") %>%
   rename(inputstate = state_FIPS) %>%
-  print()
+  print(n = nrow(.))
+
 
 spae <- read_tsv("data/spae/MITU0022_OUTPUT.tab") %>%
   mutate(wt = weight / max(weight, na.rm = TRUE)) %>%
@@ -248,8 +248,13 @@ ballot_confidence <- spae %>%
 
 usep <- read_csv("data/vep/usep-state-vep-2016.csv") %>%
   select(State, `VEP Total Ballots Counted`) %>%
-  setNames(c("state", "vep_turnout")) %>%
-  filter(!(state %in% c("United States", "District of Columbia"))) %>%
+  setNames(c("state", "vep_turnout")) %>% 
+  left_join(census) %>% 
+  select(state_abb, vep_turnout) %>% 
+  rename(State = state_abb) %>% 
+  # rename(vep_turnout = `VEP Total Ballots Counted`) %>%
+  # filter(!(State %in% c("United States", "District of Columbia"))) %>%
+  filter(State %in% c(state.abb, "District of Columbia")) %>%
   mutate(vep_turnout = as.numeric(str_replace(vep_turnout, "%", ""))) %>%
   print()
 
@@ -305,6 +310,7 @@ cps <- cps_raw %>%
          ill_disabled = case_when(VOWHYNOT == 1 ~ 1)) %>%
   print()
 
+
 names(cps)
 
 count(cps, STATEFIP, YEAR) %>%
@@ -326,8 +332,7 @@ cps_norms <- cps %>%
               sum(voted == 0, na.rm = TRUE),
             prop_nv_ill_disabled =
               sum(ill_disabled == 1, na.rm = TRUE) /
-              sum(voted == 0, na.rm = TRUE),
-            n = n()) %>%
+              sum(voted == 0, na.rm = TRUE)) %>%
   mutate_at(vars(starts_with("prop_")), function(x) x * 100) %>%
   rename_at(vars(starts_with("prop_")),
             function(x) str_replace(x, "prop", "perc")) %>%
@@ -336,6 +341,7 @@ cps_norms <- cps %>%
   rename(State = state_abb) %>%
   select(State, matches("."), -inputstate) %>%
   print(n = nrow(.))
+
 
 
 ## ??????? Is this working right?
@@ -355,34 +361,51 @@ evan_file <- readxl::read_excel("~/Dropbox/PA/Great Lakes Election Project/norma
 
 ls()
 
-evan_file
-absentee
-regs
-total_absentee
-uocava
 
-#renames
-ballot_confidence
-cps_norms
-polling_place
-waits
-
-# merging
-normalized_final <- evan_file %>%
+normalized <- evan_file %>%
   left_join(regs) %>%
-  left_join(uocava) %>%
+  left_join(uocava) %>% 
   left_join(absentee) %>%
-  left_join(total_absentee) %>%
+  mutate(ballots_cast_absentee = 
+           absentee_ballots_returned + uocava_ballots_returned) %>% 
+  left_join(prop_methods) %>%
+  left_join(waits) %>% 
+  left_join(polling_place) %>% 
   left_join(ballot_confidence) %>%
-  left_join(cps_norms) %>%
-  left_join(polling_place) %>%
-  left_join(waits) %>%
+  left_join(usep) %>%
+  left_join(cps_norms) %>% 
+  select(State, jurisdictions, joyce, 
+         new_registrations_received, new_valid_registrations, total_registered_voters,
+         contains("prov_ballots"), 
+         total_ballots_cast,
+         contains("ballots_cast"),
+         absentee_ballots_sent, absentee_ballots_returned, absentee_ballots_counted,
+         uocava_ballots_sent, uocava_ballots_returned, uocava_ballots_counted,
+         new_registrations_rejected, absentee_ballots_rejected, uocava_ballots_rejected,
+         vep_turnout,
+         perc_vote_early, perc_vote_civabs, perc_vote_uocava, perc_vote_inperson, perc_vote_prov, perc_vote_mail, perc_vote_other,
+         # need residual votes
+         percent_electronic_sign_in:paper_ballot_booths,
+         vep_turnout, perc_vep_registered, 
+         pct_registrations_rejected, perc_nv_reg_problem,
+         perc_turnout_prov, perc_prov_rej,
+         pct_absentee_ballots_rejected, pct_absentee_ballots_not_returned,
+         pct_uocava_ballots_rejected, pct_uocava_ballots_not_returned, 
+         mean_wait,
+         perc_nv_place_problem, pct_easy_polling_place, perc_nv_ill_disabled, pct_confident,
+         # data completeness???
+         matches(".")) %>% 
+  rename()
   print()
 
-write_csv(normalized_final, here("output/normalized/normalized-mgd.csv"))
+names(normalized)
+
+# some potentially inconsistent/redundant data?
+select(normalized, perc_vote_early, perc_early_vote, perc_vote_inperson, perc_ed_vote)
+
+write_csv(normalized, here("output/normalized/normalized-mgd.csv"))
 
 
 
 print("Normalized measures code completed without error")
 
-# --- Don't forget to check county turnout again -----------------------

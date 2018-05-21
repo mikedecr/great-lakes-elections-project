@@ -12,28 +12,39 @@ Do this as linearly as possible
 - [x] start with EAVS
 - [x] SPAE/waits
 - [x] VEP
+  + [ ] *how to deal with data availability?* 
+  + [ ] *Just keep the file offline and purposefully break the code?*
+  + [ ] *Include a warning at the top that it doesn't work on purpose?*
 - [x] Vote methods
-  - [ ] ask about doing 85% threshold for vote methods
+  - [ ] *ask about doing 85% threshold for vote methods*
 - [ ] CPS
-  - [ ] Get Barry's help with downloading it?
-  - [ ] not clear why the CPS that I have lacks weights
-  - [ ] how to code turnout (count refusals/DK as nonvotes?)
-  - [ ] how to code eligibility
+  - [ ] *Get Barry's help with downloading it?*
+  - [ ] *not clear why the CPS that I have lacks weights*
+  - [ ] *how to code turnout (count refusals/DK as nonvotes?)*
+  - [ ] *how to code eligibility*
 - [ ] Normalized measures
-  + fix Evan file merge
-  - Build it all into one file
-  - sort columns
-- [ ] exhaustive checks for comments, todos, alerts
-- [ ] Whatever Evan has for you?
-- [ ] Build-all file
-- [ ] number of states? 50, 51, 54? (ask?)
+  + [x] fix Evan file merge
+  + [ ] get residual votes from Evan
+  + [x] sort columns using normalized table
+- [ ] Consult with Evan
+  + [ ] resolve "redundant columns"
+  + [ ] *"ballots cast absentee" submitted or accepted?*
+  + [ ] *"data completeness rate"*
+  + [ ] *"usability of state elections websites" and "website capabilities"*
+  + [ ] Make a codebook 
+      * [ ] naming scheme
+      * [ ] data sources
+      * [ ] potential errors
 - [ ] check that final file contains all normalized measures
-
-
-Codebook notes
-
+- [ ] Collect Evan's final code has for you? (or not?)
+- [ ] exhaustive checks for comments, todos, alerts
+- [ ] test Build-all file
 - [ ] make a codebook
-- [ ] voting methods figures aren't always mutually exclusive
+  + [ ] voting methods figures aren't always mutually exclusive
+- [ ] Delivery of other data (waits, county VEP)
+
+
+
 
 
 
