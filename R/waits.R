@@ -19,7 +19,7 @@
 # b.      For respondents who do not respond to the open-ended prompt, take the average of the responses from step 2.a.
 
 
-
+# master build file loads packages already
 library("magrittr")
 library("tidyverse")
 library("ggplot2")

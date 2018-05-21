@@ -3,11 +3,11 @@
 #   SUMMARY/NORMALIZED MEASURES
 # ----------------------------------------------------
 
-# navigate to PA/MIT
 
+# master build file loads packages already
 library("here")
-library("skimr")
-library("janitor")
+# library("skimr")
+# library("janitor")
 library("magrittr")
 library("tidyverse")
 library("ggplot2")
@@ -402,6 +402,7 @@ names(normalized)
 # some potentially inconsistent/redundant data?
 select(normalized, perc_vote_early, perc_early_vote, perc_vote_inperson, perc_ed_vote)
 
+dir.create(here("output/normalized"))
 write_csv(normalized, here("output/normalized/normalized-mgd.csv"))
 
 

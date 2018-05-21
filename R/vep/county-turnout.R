@@ -4,6 +4,7 @@
 
 # directory at "box\ sync/PA/MIT" using terminal
 
+# master build file loads packages already
 library("magrittr")
 library("tidyverse")
 library("here")

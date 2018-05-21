@@ -6,7 +6,7 @@
 # 2. Run files A through C
 # 3. Evan has D through F
 
-
+# master build file loads packages already
 library("magrittr")
 library("tidyverse")
 library("here")
