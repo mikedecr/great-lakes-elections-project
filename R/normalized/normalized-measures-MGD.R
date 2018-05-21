@@ -395,7 +395,6 @@ normalized <- evan_file %>%
          perc_nv_place_problem, pct_easy_polling_place, perc_nv_ill_disabled, pct_confident,
          # data completeness???
          matches(".")) %>% 
-  rename()
   print()
 
 names(normalized)
