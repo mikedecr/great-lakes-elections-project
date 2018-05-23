@@ -21,7 +21,7 @@ For more on the structure of the code, see `R/README.md`.
 
 One issue with Git is the handling of data files. Github doesn't like huge data files, but we're working with databases that are distributed with `.zip` or `.gz` files anyway, so code contains tricks to unzip large files upon initial execution.
 
-The largest data files are managed with `git-lfs` on my (Mike's) end, but the end user should not notice any hiccups with regard to large files. If a user does, they should contact me at `decrescenzo [ampersand] wisc [period] edu`. 
+The largest data files are managed with `git-lfs` on my (Mike's) end, but the end user should not notice any hiccups with regard to large files (I think? See [here](https://git-lfs.github.com/)). If a user does, they should contact me at `decrescenzo [ampersand] wisc [period] edu`. 
 
 
 
