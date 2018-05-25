@@ -349,7 +349,7 @@ cps_norms <- cps %>%
 # --- final normalized table -----------------------
 
 
-evan_file <- readxl::read_excel("~/Dropbox/PA/Great Lakes Election Project/normalized measures/normalized measures.xlsx") %>%
+evan_file <- readxl::read_excel("data/normalized-evan/normalized measures.xlsx") %>%
   rename(State = state) %>%
   print()
 
