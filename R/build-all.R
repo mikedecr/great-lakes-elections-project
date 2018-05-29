@@ -58,7 +58,7 @@ cbind(na.omit(req_pkgs$message))
 source(here("R/EAVS/eavs-2016-build.R"), echo = TRUE)
 beepr::beep(4)
 source(here("R/wait-times/waits.R"), echo = TRUE)
-beepr   ::beep(4)
+beepr::beep(4)
 source(here("R/VEP/county-turnout.R"), echo = TRUE)
 beepr::beep(4)
 
