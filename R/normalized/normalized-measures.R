@@ -141,21 +141,19 @@ raw_methods <- d %>%
   group_by(State) %>%
   mutate_if(is.numeric, function(x) ifelse(x < 0, NA, x)) %>%
   # raw method ----
-  summarize_if(is.numeric, sum, na.rm = TRUE) %>%
+  # summarize_if(is.numeric, sum, na.rm = TRUE) %>%
   # ----
   # MAE method ----
-  # summarize_if(is.numeric, function(x) {
-  #                total_reg <- sum(.$A1a, na.rm = TRUE)
-  #                represented <- sum(.$A1a[!is.na(x)], na.rm = TRUE)
-  #                frac_represented <- represented / total_reg
-  #                ifelse(frac_represented >= 0.85, sum(x, na.rm = TRUE), NA)
-  #               }
-  #   ) %>%
+  summarize_if(is.numeric, function(x) {
+                 total_reg <- sum(.$A1a, na.rm = TRUE)
+                 represented <- sum(.$A1a[!is.na(x)], na.rm = TRUE)
+                 frac_represented <- represented / total_reg
+                 ifelse(frac_represented >= 0.85, sum(x, na.rm = TRUE), NA)
+                }
+    ) %>%
   # -----
   mutate(F1other = F1h + F1i + F1j) %>%
   select(-A1a, -F1h, -F1i, -F1j) %>%
-  # mutate(calc_total = rowSums(select(., F1b:F1other), na.rm = TRUE),
-  #        unknown = F1a - calc_total) %>%
   print(n = nrow(.))
 
 
@@ -168,23 +166,12 @@ prop_methods <- raw_methods %>%
          prop_vote_prov = F1e / total,
          prop_vote_early = F1f / total,
          prop_vote_mail = F1g / total,
-         prop_vote_other = F1other / total,
-         # prop_vote_unknown = unknown / total
+         prop_vote_other = F1other / total
         ) %>%
-  select(-contains("F1"), -B8a, -C4a, -total,
-         # -calc_total, -unknown
-        ) %>%
+  select(-contains("F1"), -B8a, -C4a, -total) %>%
   mutate_at(vars(contains("prop_v")), function(x) x * 100) %>%
   rename_if(is.numeric, function(x) str_replace_all(x, "prop", "perc")) %>%
-  # mutate(perc_vote_accounted =
-  #          select(., contains("perc_v"), -contains("unknown")) %>%
-  #          rowSums(., na.rm = TRUE),
-  #        perc_vote_unaccounted = 100 - perc_vote_accounted) %>%
-  # mutate_if()
   print(n = nrow(.))
-
-
-
 
 
 
@@ -240,14 +227,13 @@ ballot_confidence <- spae %>%
 
 # --- US Elections Project -----------------------
 
+# state turnout: drops DC?
 usep <- read_csv("data/vep/usep-state-vep-2016.csv") %>%
   select(State, `VEP Total Ballots Counted`) %>%
   setNames(c("state", "vep_turnout")) %>% 
   left_join(census) %>% 
   select(state_abb, vep_turnout) %>% 
   rename(State = state_abb) %>% 
-  # rename(vep_turnout = `VEP Total Ballots Counted`) %>%
-  # filter(!(State %in% c("United States", "District of Columbia"))) %>%
   filter(State %in% c(state.abb, "District of Columbia")) %>%
   mutate(vep_turnout = as.numeric(str_replace(vep_turnout, "%", ""))) %>%
   print()
@@ -258,13 +244,9 @@ usep <- read_csv("data/vep/usep-state-vep-2016.csv") %>%
 
 # codebook: https://cps.ipums.org/cps-action/variables/group?id=voter_voter
 
-# unzip CPS if it isn't already
-if ("IPUMPS-cps_00001.csv" %in% list.files(here("data/cps"))) {
-  print("CPS Data already uncompressed")
-} else {
-  R.utils::gunzip(here('data/cps/IPUMPS-cps_00001.csv.gz'), remove = FALSE)
-}
 
+cps <- haven::read_dta(here("data/cps/vrs/vrs_extract_2016.dta")) %>%
+  print()
 
 # Voting age and race demographics (??)
 # Percent of VEP registered to vote
@@ -276,72 +258,70 @@ if ("IPUMPS-cps_00001.csv" %in% list.files(here("data/cps"))) {
 # Pct of nonvoters who didn't vote because of permanent illness/disability (1)
 #   (nonvote, illness/disability)
 
-
-
-# read CPS data and do simple recoding
-cps_raw <- read_csv(here("data/cps/IPUMPS-cps_00001.csv")) %>%
-  filter(YEAR == 2016) %>%
-  print()
-
-cps <- cps_raw %>%
-  mutate(voted = case_when(VOTED %in% c(1, 96, 97, 98) ~ 0,
-                           VOTED == 2 ~ 1),
-         registered = case_when(voted == 1 ~ 1,
-                                VOREG == 2 ~ 1,
-                                VOREG == 1 ~ 0),
-         # eligible if you vote/register
-         # some regwhynot imply ineligibility
-         # what to do about the rest?
-         eligible = case_when(voted == 1 ~ 1,
-                              registered == 1 ~ 1,
-                              !(VOYNOTREG %in% c(3, 8)) ~ 0,
-                              VOYNOTREG %in% c(3, 8, 99) ~ 0,
-                              TRUE ~ -1),
-         # what counts as a registration problem?
-         reg_problem = case_when((VOWHYNOT == 8) |
-                                 VOYNOTREG %in% c(1, 2, 3) ~ 1),
-         pollingplace_problem = case_when(VOWHYNOT == 10 ~ 1),
-         ill_disabled = case_when(VOWHYNOT == 1 ~ 1)) %>%
-  print()
-
-
-names(cps)
-
-count(cps, STATEFIP, YEAR) %>%
+# examine variable labels
+cps %>%
+  mutate_all(labelled::var_label) %>% 
+  distinct() %>% 
+  gather() %>%
   print(n = nrow(.))
 
+# variables
+# - pes1 (voted)
+# - pes2 (registered)
+# - pes3 (reason not registered)
+# - pes4 (main reason not vote)
+# - pes5 (in person, by mail)
+# - pes6 (election day or early)
+# - pes5 (how registered)
+# - pwsswgt (weight)
+# - gestfips (FIPS)
 
-
-# aggregate by state (percentages)
 cps_norms <- cps %>%
-  group_by(STATEFIP) %>%
-  summarize(prop_vep_registered =
-              sum(registered == 1, na.rm = TRUE) /
-              sum(eligible == 1, na.rm = TRUE),
-            prop_nv_reg_problem =
-              sum(reg_problem == 1, na.rm = TRUE) /
-              sum(voted == 0, na.rm = TRUE),
-            prop_nv_place_problem =
-              sum(pollingplace_problem, na.rm = TRUE) /
-              sum(voted == 0, na.rm = TRUE),
-            prop_nv_ill_disabled =
-              sum(ill_disabled == 1, na.rm = TRUE) /
-              sum(voted == 0, na.rm = TRUE)) %>%
+  mutate_all(labelled::remove_labels) %>% 
+  mutate(voted = case_when(pes1 == 1 ~ 1,
+                           pes1 == 2 ~ 0),
+         registered = case_when(pes2 == 1 ~  1,
+                                pes2 == 2 ~ 0,
+                                voted == 1 ~ 1),
+         eligible = case_when(pes3 %in% c(3, 8) ~ 0, 
+                              pes3 > 0 ~ 1,
+                              registered == 1 ~ 1,
+                              voted == 1 ~ 1),
+         nonvote_regproblems = case_when(pes4 == 8 ~ 1,
+                                         pes4 %in% c(1:7, 9:11) ~ 0),
+         nonvote_placeproblems = case_when(pes4 == 10 ~ 1,
+                                         pes4 %in% c(1:9, 1) ~ 0),
+         nonvote_illdisable = case_when(pes4 == 1 ~ 1,
+                                         pes4 %in% c(2:11, 1) ~ 0)) %>%
+  group_by(gestfips) %>%
+  summarize(prop_vep_registered = sum(registered * pwsswgt, na.rm = TRUE) / 
+                            sum(eligible * pwsswgt, na.rm = TRUE),
+            prop_nv_reg_problem = sum((nonvote_regproblems == 1) * pwsswgt, 
+                                 na.rm = TRUE) / 
+                             sum((nonvote_regproblems == 0) * pwsswgt, 
+                                 na.rm = TRUE),
+            prop_nv_place_problem = sum((nonvote_placeproblems == 1) * pwsswgt, 
+                                 na.rm = TRUE) / 
+                             sum((nonvote_placeproblems == 0) * pwsswgt, 
+                                 na.rm = TRUE),
+            prop_nv_ill_disabled = sum((nonvote_illdisable == 1) * pwsswgt, 
+                                 na.rm = TRUE) / 
+                             sum((nonvote_illdisable == 0) * pwsswgt, 
+                                 na.rm = TRUE)) %>%
   mutate_at(vars(starts_with("prop_")), function(x) x * 100) %>%
   rename_at(vars(starts_with("prop_")),
             function(x) str_replace(x, "prop", "perc")) %>%
-  rename(inputstate = STATEFIP) %>%
-  left_join(select(census, inputstate, state_abb)) %>%
+  rename(inputstate = gestfips) %>%
+  mutate(inputstate = as.integer(inputstate)) %>%
+  left_join(select(census, inputstate, state_abb), .) %>%
   rename(State = state_abb) %>%
   select(State, matches("."), -inputstate) %>%
   print(n = nrow(.))
 
 
-
 ## ??????? Is this working right?
 ## Check the book again?
-
-
+## check w/ Barry about coding decisions (force code to zero or trust NA)
 
 
 

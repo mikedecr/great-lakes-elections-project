@@ -47,7 +47,7 @@ Do this as linearly as possible
       * [ ] naming scheme
       * [ ] data sources
       * [ ] potential errors
-- [ ] sig figs
+- [ ] *sig figs* (5?)
 - [ ] Check old notes
 - [ ] check that final file contains all normalized measures
 - [ ] Collect Evan's final code has for you? (or not?)

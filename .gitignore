@@ -57,11 +57,11 @@ data/SPAE/*
 # see data but ignore other folders
 data/vep/*/
 
-# CPS stuff: hide everything but the ZIP and codebook info
-data/CPS/*
+# CPS stuff: hide everything but the dta file (from Barry) and codebook info
+data/CPS/drop
+data/CPS/test
+data/CPS/ipums
 !data/CPS/cpsnov16.pdf
-!data/CPS/IPUMPS-cps_00001.csv.gz
-!data/CPS/ipums-cps-variables.png
 
 # ----------------------------- #
 #          output
