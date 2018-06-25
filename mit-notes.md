@@ -19,17 +19,18 @@ Do this as linearly as possible
   + [ ] *Include a warning at the top that it doesn't work on purpose?*
   + [ ] save more graphics
 - [x] Vote methods
-  - [ ] *ask about doing 85% threshold for vote methods*
+  - [x] *ask about doing 85% threshold for vote methods* (Yes)
     + [ ] this currently uses the raw data, not the aggregated
     + [ ] but could make one with aggregated data? Shouldn't make any difference?
-  - [ ] *old note says GL states only. This would be easier, but is the restriction necessary anymore?*
-  - [ ] *do we care about "total absentee?"*
+  - [x] *old note says GL states only. This would be easier, but is the restriction necessary anymore?* (no)
+  - [x] *do we care about "total absentee?"* (no)
 - [ ] CPS
   - [ ] *Get Barry's help with downloading it?*
   - [ ] *not clear why the CPS that I have lacks weights*
   - [ ] *how to code turnout (count refusals/DK as nonvotes?)*
   - [ ] *how to code eligibility*
   - [ ] any graphics?
+  - [ ] **must simply be patient in Firefox**
 - [ ] Normalized measures
   + [x] fix Evan file merge
   + [ ] get residual votes from Evan
@@ -46,6 +47,7 @@ Do this as linearly as possible
       * [ ] naming scheme
       * [ ] data sources
       * [ ] potential errors
+- [ ] sig figs
 - [ ] Check old notes
 - [ ] check that final file contains all normalized measures
 - [ ] Collect Evan's final code has for you? (or not?)

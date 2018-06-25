@@ -7,49 +7,26 @@
 # packages to load include here, magrittr, tidyverse, ggplot2
 # install but don't load some other packages
 
+requires <- c("here", "magrittr", "tidyverse", "ggplot2", "readxl", "readr", 
+              "R.utils", "haven", "labelled", "gtools", "beepr", "readr", 
+              "gghighlight")
 
+to_install <- requires %in% rownames(installed.packages()) == FALSE
 
-# currently installed packages
-pkgs <- as.data.frame(installed.packages()) 
+cloud_url <- "https://cloud.r-project.org/"
 
-# packages we need, and a logical for loading
-pkg_array <- 
-  rbind(cbind(pkg = "here", load = TRUE),
-        cbind(pgg = "magrittr", load = TRUE),
-        cbind(pgg = "tidyverse", load = TRUE),
-        cbind(pgg = "ggplot2", load = TRUE),
-        cbind(pgg = "readxl", load = FALSE),
-        cbind(pgg = "readr", load = FALSE),
-        cbind(pgg = "R.utils", load = FALSE),
-        cbind(pgg = "haven", load = FALSE),
-        cbind(pgg = "labelled", load = FALSE),
-        cbind(pgg = "gtools", load = FALSE),
-        cbind(pgg = "beepr", load = FALSE),
-        cbind(pgg = "readr", load = FALSE),
-        cbind(pgg = "gghighlight", load = FALSE)
-        )
-
-req_pkgs <- as.data.frame(pkg_array, stringsAsFactors = FALSE)
-req_pkgs$message <- NA
-
-# for each package: 
-# checks if package is installed, if not: install and add a message
-# if we need to load it, load it
-for (p in seq_along(req_pkgs$pkg)) {
-
-  if (req_pkgs$pkg[p] %in% pkgs$Package == FALSE) {
-    install.packages(req_pkgs$pkg[p], repos = "https://cloud.r-project.org/")
-    req_pkgs$message[p] <- paste0("'", req_pkgs$pkg[p], "' was installed")
-  }
-
-  if (req_pkgs$load[p] == TRUE){
-    library(req_pkgs$pkg[p], character.only = TRUE)
-  }
-
+# install if we need to
+if (sum(to_install) > 0) {
+  install.packages(requires[to_install], repos = cloud_url)
 }
 
-# which packages were installed?
-cbind(na.omit(req_pkgs$message))
+# attach only what we want
+library("here")
+library("magrittr")
+library("tidyverse")
+library("ggplot2")
+
+
 
 
 
