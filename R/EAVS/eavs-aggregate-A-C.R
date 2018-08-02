@@ -4,8 +4,6 @@
 #   "new" method for dealing with NA
 # ----------------------------------------------------
 
-library("magrittr")
-library("tidyverse")
 
 alerts <- 0
 
@@ -101,7 +99,12 @@ d <- d %>%
                         C2 == - 9999999 ~ "9. Data Not Available",
                         C2 == -888888 ~ "8. Not Applicable"),
          C4d_Other = as.character(C4d_Other)) %>%
+  mutate_if(is.numeric, function(x) ifelse(x < 0 | is.na(x), NA, x)) %>%
   print
+
+
+# save recodes for later grabbing
+saveRDS(d, here("data/eavs/eavs-recode.RDS"))
 
 
 # ----------------------------------------------------
@@ -129,7 +132,6 @@ d <- d %>%
 #   jurisdiction counter, recode missingness codes to NA
 pre_state <- d %>%
   mutate(jurisdictions = 1) %>%
-  mutate_if(is.numeric, function(x) ifelse(x < 0 | is.na(x), NA, x)) %>%
   print()
 
 

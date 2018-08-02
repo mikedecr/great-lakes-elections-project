@@ -3,63 +3,71 @@ title: "Questions about EAVS"
 ---
 
 
+# Evan call 7/11
+
+- Where is Evan at
+- Where am I at
+  + verify with Barry that I'm doing one CPS thing right
+  + calculate EAVS data completeness
+  + *do I need residual votes from Evan?* No
+  + *redundant columns*
+- What we need to do
+  + use 85% threshold for normalized measures
+  + Make a codebook
+    * EAVS
+      - no need for variable descriptions
+      - but we need to describe aggregation
+    * Wait times
+      - SPAE and CCES
+    * Normalized measures
+  + sigfigs
+
 # To do
 
 fix availability of turnout data?
 
 Do this as linearly as possible
 
-- [x] start with EAVS
-  + [ ] any graphics?
-- [x] SPAE/waits
-  + [ ] save more graphics
-- [x] VEP
-  + [ ] *how to deal with data availability?* 
-  + [ ] *Just keep the file offline and purposefully break the code?*
-  + [ ] *Include a warning at the top that it doesn't work on purpose?*
-  + [ ] save more graphics
-- [x] Vote methods
-  - [x] *ask about doing 85% threshold for vote methods* (Yes)
-    + [ ] this currently uses the raw data, not the aggregated
-    + [ ] but could make one with aggregated data? Shouldn't make any difference?
-  - [x] *old note says GL states only. This would be easier, but is the restriction necessary anymore?* (no)
-  - [x] *do we care about "total absentee?"* (no)
-- [ ] CPS
-  - [ ] *Get Barry's help with downloading it?*
-  - [ ] *not clear why the CPS that I have lacks weights*
+- Do we need graphics?
+  + [ ] EAVS
+  + [ ] wait times
+  + [ ] VEP
+  + [ ] Vote methods
+  + [ ] CPS registration
+  + [ ] Normalized measures
+- [ ] VEP data
+  + [ ] Remove data from Git/Repo among publication
+  + [ ] save notes about revisions
+- [ ] CPS coding
+  - [ ] *Get the rawest data format possible with codebook?*
   - [ ] *how to code turnout (count refusals/DK as nonvotes?)*
   - [ ] *how to code eligibility*
-  - [ ] any graphics?
-  - [ ] **must simply be patient in Firefox**
+    + [ ] add EAVS/USEP
 - [ ] Normalized measures
-  + [x] fix Evan file merge
-  + [ ] get residual votes from Evan
-  + [x] sort columns using normalized table
-  + [ ] Codebook notes:
-    * [ ] vote methods categories aren't always mutually exclusive
-    * [ ] assemblage of data sources
-- [ ] Consult with Evan
-  + [ ] resolve "redundant columns"
-  + [ ] *"ballots cast absentee" submitted or accepted?*
-  + [ ] *"data completeness rate"*
+  + [ ] *"data completeness rate"* (Charles email)
+  + [ ] get residual votes from Evan (for normalized table)
+  + [ ] Redundant columns
+    * [ ] *This is because you need to divide only valid numerators by valid denominators* (start with the calculation, and then convert to NA if not enough)
+  + [ ] sort columns
+  + [ ] *Confirm w/ Evan that he's using 85% threshold for anything aggregated to state?*
+  + [ ] *"ballots cast absentee" does "cast" mean submitted or accepted?* (check MAE)
   + [ ] *"usability of state elections websites" and "website capabilities"*
-  + [ ] Make a codebook 
+  + [ ] Make a codebook
+    * [ ] *Google doc*
       * [ ] naming scheme
-      * [ ] data sources
-      * [ ] potential errors
-- [ ] *sig figs* (5?)
-- [ ] Check old notes
-- [ ] check that final file contains all normalized measures
-- [ ] Collect Evan's final code has for you? (or not?)
-  + [ ] is it worth incorporating?
-  + [ ] include a link to his resources?
-- [ ] exhaustive checks for comments, todos, alerts
-- [ ] always be testing the Build file
-- [ ] `make`?
-- [ ] codebook
-  + [ ] joint or per-person? Both?
-  + [ ] might be worth pointing out on the website that the EAVS has intra-state discrepancies in responses about election law
-- [ ] Delivery of other data (waits, county VEP)
+      * [ ] operationalization of each variable
+      * [ ] data sources for each
+      * [ ] potential issues/errors
+        - [ ] vote methods categories aren't always mutually exclusive
+        - [ ] EAVS has intra-state discrepancies in responses about election law
+  + [ ] *sig figs* **(5?)** 
+- [ ] *Final version to send to Charles/Dataverse*
+  + [ ] Check old notes
+  + [ ] exhaustive checks for comments, todos, alerts
+  + [ ] Collect Evan's code (buildable? `make`? link to his?)
+  + [ ] Remove McDonald data
+  + [ ] One codebook
+  
 
 
 
